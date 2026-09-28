@@ -1,5 +1,5 @@
 // The Attendance Predictor - Timetable Dataset (13 Sections)
-const TIMETABLES_DATA = [
+window.TIMETABLES_DATA = [
   {
     id: "ii-bme",
     name: "II BME",
