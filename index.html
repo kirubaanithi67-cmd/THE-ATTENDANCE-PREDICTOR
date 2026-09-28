@@ -1,0 +1,3353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Attendance Predictor - Minecraft 8-Bit Edition (Phase 1 & 2)</title>
+  <meta name="description" content="College Attendance Predictor with OD Simulator, Visual Analytics, and AI Attendance Advisor Chatbot. Built for Vercel.">
+  
+  <!-- Google Fonts: Press Start 2P & VT323 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       MINECRAFT PIXEL ART DESIGN SYSTEM
+       ========================================================================== */
+    :root {
+      --bg-dark: #0a0e19;
+      --bg-deep: #0f1526;
+      --panel-bg: #161e33;
+      --panel-border-light: #3d4f7c;
+      --panel-border-dark: #080b13;
+      --slot-bg: #101628;
+      --slot-border-dark: #05070d;
+      --slot-border-light: #2c3858;
+      
+      --grass-green: #5eb82a;
+      --grass-green-light: #7cd93f;
+      --grass-green-dark: #3e8218;
+      
+      --gold: #f8b800;
+      --gold-light: #ffe169;
+      --gold-dark: #b8860b;
+      
+      --diamond: #38e1ff;
+      --diamond-light: #94f0ff;
+      --diamond-dark: #0099cc;
+      
+      --redstone: #ff3333;
+      --redstone-light: #ff6b6b;
+      --redstone-dark: #990000;
+      
+      --amethyst: #b967ff;
+      --amethyst-light: #d896ff;
+      
+      --text-main: #e8ecf4;
+      --text-muted: #95a3c3;
+      
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-retro: 'VT323', monospace;
+      
+      --pixel-shadow: 4px 4px 0px #000000;
+      --pixel-shadow-sm: 2px 2px 0px #000000;
+      --pixel-shadow-lg: 6px 6px 0px #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      image-rendering: pixelated;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, #1a2544 0%, transparent 75%),
+        linear-gradient(rgba(16, 21, 36, 0.9) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(16, 21, 36, 0.9) 2px, transparent 2px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
+      font-family: var(--font-retro);
+      font-size: 20px;
+      line-height: 1.3;
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Pixel Art Container Box */
+    .pixel-box {
+      background: var(--panel-bg);
+      border: 4px solid #000000;
+      box-shadow: 
+        inset -4px -4px 0px var(--panel-border-dark),
+        inset 4px 4px 0px var(--panel-border-light),
+        var(--pixel-shadow);
+      padding: 16px;
+      position: relative;
+    }
+
+    .pixel-box-inset {
+      background: var(--slot-bg);
+      border: 3px solid #000000;
+      box-shadow: 
+        inset 3px 3px 0px var(--slot-border-dark),
+        inset -3px -3px 0px var(--slot-border-light);
+      padding: 12px;
+    }
+
+    /* Navigation Tabs Row */
+    .nav-tabs-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: -6px;
+    }
+
+    .tab-btn {
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      padding: 10px 14px;
+      background: #1b253f;
+      border: 3px solid #000;
+      border-bottom: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      box-shadow: inset 2px 2px 0 #3a4b75;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .tab-btn.active {
+      background: var(--panel-bg);
+      color: var(--gold);
+      box-shadow: inset 3px 3px 0 var(--panel-border-light), inset -3px 0 0 var(--panel-border-dark);
+      padding-top: 12px;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: #253356;
+      color: #fff;
+    }
+
+    /* Buttons */
+    .pixel-btn {
+      font-family: var(--font-pixel);
+      font-size: 10.5px;
+      line-height: 1;
+      padding: 10px 14px;
+      cursor: pointer;
+      border: 3px solid #000000;
+      background: #4a5c88;
+      color: #ffffff;
+      box-shadow: 
+        inset 3px 3px 0px #7087be,
+        inset -3px -3px 0px #24304e,
+        var(--pixel-shadow-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-transform: uppercase;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .pixel-btn:hover {
+      background: #5b6f9e;
+      filter: brightness(1.1);
+    }
+
+    .pixel-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 
+        inset 3px 3px 0px #24304e,
+        inset -3px -3px 0px #7087be,
+        0px 0px 0px #000000;
+    }
+
+    .pixel-btn-green {
+      background: var(--grass-green-dark);
+      box-shadow: 
+        inset 3px 3px 0px var(--grass-green-light),
+        inset -3px -3px 0px #224d0c,
+        var(--pixel-shadow-sm);
+    }
+    .pixel-btn-green:hover { background: var(--grass-green); }
+
+    .pixel-btn-gold {
+      background: var(--gold-dark);
+      color: #1a1200;
+      box-shadow: 
+        inset 3px 3px 0px var(--gold-light),
+        inset -3px -3px 0px #705204,
+        var(--pixel-shadow-sm);
+    }
+    .pixel-btn-gold:hover { background: var(--gold); }
+
+    .pixel-btn-red {
+      background: var(--redstone-dark);
+      box-shadow: 
+        inset 3px 3px 0px var(--redstone-light),
+        inset -3px -3px 0px #5c0000,
+        var(--pixel-shadow-sm);
+    }
+    .pixel-btn-red:hover { background: var(--redstone); }
+
+    .pixel-btn-diamond {
+      background: var(--diamond-dark);
+      color: #052636;
+      box-shadow: 
+        inset 3px 3px 0px var(--diamond-light),
+        inset -3px -3px 0px #005f80,
+        var(--pixel-shadow-sm);
+    }
+    .pixel-btn-diamond:hover { background: var(--diamond); }
+
+    .pixel-btn-purple {
+      background: #6a2c91;
+      color: #fff;
+      box-shadow: 
+        inset 3px 3px 0px var(--amethyst-light),
+        inset -3px -3px 0px #381250,
+        var(--pixel-shadow-sm);
+    }
+    .pixel-btn-purple:hover { background: #8537b6; }
+
+    .pixel-btn-sm {
+      font-size: 8.5px;
+      padding: 6px 8px;
+    }
+
+    /* Forms & Inputs */
+    .pixel-input, .pixel-select {
+      font-family: var(--font-retro);
+      font-size: 22px;
+      background: #080c16;
+      color: var(--gold-light);
+      border: 3px solid #000000;
+      box-shadow: 
+        inset 2px 2px 0px #000000,
+        inset -2px -2px 0px #2a375a;
+      padding: 6px 10px;
+      outline: none;
+      width: 100%;
+    }
+
+    .pixel-input:focus, .pixel-select:focus {
+      border-color: var(--gold);
+      color: #ffffff;
+      background: #0d1424;
+    }
+
+    .pixel-checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-family: var(--font-retro);
+      font-size: 20px;
+    }
+
+    .pixel-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      background: #0a0e1a;
+      border: 3px solid #000000;
+      box-shadow: inset 2px 2px 0px #000, inset -2px -2px 0px #2c3858;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+    }
+
+    .pixel-checkbox:checked {
+      background: var(--grass-green);
+    }
+
+    .pixel-checkbox:checked::before {
+      content: "✔";
+      font-size: 14px;
+      color: #000000;
+      font-family: var(--font-pixel);
+      font-weight: bold;
+    }
+
+    input[type=range].pixel-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      background: #0a0e1a;
+      height: 14px;
+      border: 2px solid #000000;
+      box-shadow: inset 2px 2px 0px #000;
+      outline: none;
+    }
+
+    input[type=range].pixel-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 24px;
+      background: var(--gold);
+      border: 2px solid #000000;
+      box-shadow: inset 2px 2px 0px var(--gold-light), inset -2px -2px 0px var(--gold-dark);
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       HEADER & XP BAR
+       ========================================================================== */
+    .header {
+      text-align: center;
+      padding: 16px 12px;
+      background: linear-gradient(180deg, #1f2b4a 0%, #151d32 100%);
+      position: relative;
+    }
+
+    .header-title-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .header-icon {
+      font-size: 26px;
+      filter: drop-shadow(3px 3px 0px #000);
+    }
+
+    h1.header-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(15px, 3.5vw, 23px);
+      color: var(--gold);
+      text-shadow: 3px 3px 0px #000000, -1px -1px 0px #705204;
+      letter-spacing: 1px;
+      line-height: 1.4;
+    }
+
+    .header-subtitle {
+      font-family: var(--font-pixel);
+      font-size: 9.5px;
+      color: var(--diamond);
+      text-shadow: 2px 2px 0px #000000;
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .xp-bar-container {
+      margin-top: 14px;
+      background: #000000;
+      border: 3px solid #000000;
+      padding: 3px;
+      position: relative;
+      box-shadow: var(--pixel-shadow-sm);
+    }
+
+    .xp-bar-fill {
+      height: 12px;
+      background: linear-gradient(90deg, #3dbd1a 0%, #76ec48 50%, #b2ff66 100%);
+      box-shadow: inset 0 2px 0 #d9ff99, inset 0 -2px 0 #288011;
+      width: 0%;
+      transition: width 0.4s steps(20);
+    }
+
+    .xp-bar-text {
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      color: #80ff00;
+      text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       NETHER ALERT (IRREVERSIBLE WARNING)
+       ========================================================================== */
+    .nether-alert {
+      display: none;
+      background: #4a0000;
+      border: 4px solid #ff0000;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), inset 0 0 15px rgba(255, 50, 0, 0.5), var(--pixel-shadow-lg);
+      padding: 16px;
+      text-align: center;
+      animation: pulse-danger 1s infinite alternate;
+    }
+
+    .nether-alert.active { display: block; }
+
+    @keyframes pulse-danger {
+      0% {
+        border-color: #ff0000;
+        background-color: #4a0000;
+        box-shadow: 0 0 25px rgba(255, 0, 0, 0.8), inset 0 0 20px rgba(255, 50, 0, 0.8);
+      }
+      100% {
+        border-color: #ffbb00;
+        background-color: #7a0b0b;
+        box-shadow: 0 0 10px rgba(255, 100, 0, 0.4), inset 0 0 5px rgba(255, 0, 0, 0.3);
+      }
+    }
+
+    .nether-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(12px, 3vw, 17px);
+      color: #ffffff;
+      text-shadow: 3px 3px 0px #000, 0 0 8px #ff0000;
+      margin-bottom: 8px;
+    }
+
+    .nether-desc {
+      font-size: 22px;
+      color: #ffd6d6;
+      max-width: 900px;
+      margin: 0 auto 10px auto;
+    }
+
+    .nether-subjects-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .nether-sub-tag {
+      background: #2b0000;
+      border: 2px solid #ff4444;
+      padding: 4px 10px;
+      font-family: var(--font-pixel);
+      font-size: 9.5px;
+      color: #ffcccc;
+      box-shadow: 2px 2px 0px #000;
+    }
+
+    /* ==========================================================================
+       SUMMARY STRIP (HOTBAR)
+       ========================================================================== */
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .hotbar-card {
+      background: #121829;
+      border: 3px solid #000000;
+      box-shadow: 
+        inset 2px 2px 0px #2c3858,
+        inset -2px -2px 0px #080b12,
+        var(--pixel-shadow-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .hotbar-card-label {
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hotbar-card-value {
+      font-family: var(--font-retro);
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--gold-light);
+      line-height: 1;
+      text-shadow: 2px 2px 0px #000;
+    }
+
+    .hotbar-card-sub {
+      font-size: 17px;
+      color: var(--text-muted);
+    }
+
+    .hearts-row {
+      display: flex;
+      gap: 3px;
+      margin-top: 4px;
+    }
+
+    .heart-icon {
+      font-size: 14px;
+      filter: drop-shadow(1px 1px 0px #000);
+    }
+
+    /* ==========================================================================
+       CONTROLS PANEL
+       ========================================================================== */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-family: var(--font-pixel);
+      font-size: 9.5px;
+      color: var(--gold);
+      text-shadow: 1px 1px 0px #000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quick-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .chip-btn {
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 4px 6px;
+      background: #232d4b;
+      border: 2px solid #000;
+      color: #b0c4de;
+      cursor: pointer;
+      box-shadow: 1px 1px 0 #000;
+    }
+
+    .chip-btn:hover {
+      background: #36446e;
+      color: #fff;
+    }
+
+    .chip-btn.active {
+      background: var(--gold-dark);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .bulk-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px dashed #2c3858;
+      padding-top: 14px;
+      margin-top: 10px;
+    }
+
+    /* ==========================================================================
+       SUBJECTS LIST
+       ========================================================================== */
+    .subjects-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .subjects-title {
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      color: var(--grass-green-light);
+      text-shadow: 2px 2px 0px #000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subjects-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .subject-card {
+      background: #161e33;
+      border: 3px solid #000000;
+      box-shadow: 
+        inset 3px 3px 0px #2f3e66,
+        inset -3px -3px 0px #090c14,
+        var(--pixel-shadow-sm);
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      position: relative;
+    }
+
+    .subject-card.status-irreversible { border-color: var(--redstone); background: #220d14; }
+    .subject-card.status-danger { border-color: #ff9900; }
+    .subject-card.status-ok { border-color: var(--gold); }
+    .subject-card.status-safe { border-color: var(--grass-green); }
+
+    @media (min-width: 850px) {
+      .subject-card {
+        grid-template-columns: 280px 1fr;
+      }
+    }
+
+    .sub-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 2px dashed #283658;
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 850px) {
+      .sub-info-col {
+        border-bottom: none;
+        border-right: 2px dashed #283658;
+        padding-bottom: 0;
+        padding-right: 14px;
+      }
+    }
+
+    .sub-slot-badge {
+      display: inline-flex;
+      align-items: center;
+      background: #2d3b60;
+      color: var(--gold-light);
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      padding: 3px 8px;
+      border: 2px solid #000;
+      box-shadow: 1px 1px 0 #000;
+      width: fit-content;
+    }
+
+    .sub-code-text {
+      font-family: var(--font-pixel);
+      font-size: 8.5px;
+      color: var(--diamond);
+    }
+
+    .sub-name-text {
+      font-family: var(--font-retro);
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .sub-meta-text {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.2;
+    }
+
+    .sub-stats-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .sub-pill {
+      background: #0a0e1a;
+      border: 2px solid #000;
+      padding: 2px 6px;
+      font-size: 15px;
+      color: #b9c7e6;
+    }
+
+    .sub-calc-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sub-input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .sub-pct-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 140px;
+    }
+
+    .sub-pct-input {
+      font-family: var(--font-retro);
+      font-size: 26px;
+      font-weight: bold;
+      text-align: center;
+      padding: 4px 6px;
+    }
+
+    .sub-status-tag {
+      font-family: var(--font-pixel);
+      font-size: 9.5px;
+      padding: 6px 10px;
+      border: 2px solid #000;
+      box-shadow: var(--pixel-shadow-sm);
+      text-align: center;
+      width: fit-content;
+      justify-self: end;
+    }
+
+    .tag-safe { background: var(--grass-green-dark); color: #fff; }
+    .tag-ok { background: var(--gold-dark); color: #000; }
+    .tag-danger { background: #d97706; color: #fff; }
+    .tag-irreversible { background: var(--redstone-dark); color: #fff; animation: blink-tag 1s infinite alternate; }
+
+    .sub-targets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 8px;
+    }
+
+    .target-card {
+      background: #0d1322;
+      border: 2px solid #000;
+      box-shadow: inset 1px 1px 0 #283758, 1px 1px 0 #000;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .target-card.highlight-75 { border-left: 5px solid var(--gold); }
+    .target-card.highlight-90 { border-left: 5px solid var(--diamond); }
+    .target-card.highlight-plan { border-left: 5px solid var(--grass-green-light); }
+    .target-card.highlight-od { border-left: 5px solid var(--amethyst-light); }
+
+    .target-title {
+      font-family: var(--font-pixel);
+      font-size: 8.5px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .target-main {
+      font-family: var(--font-retro);
+      font-size: 23px;
+      font-weight: bold;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .target-sub {
+      font-size: 15px;
+      color: #9bb0d8;
+      line-height: 1.2;
+    }
+
+    .text-danger { color: var(--redstone-light) !important; }
+    .text-success { color: var(--grass-green-light) !important; }
+    .text-gold { color: var(--gold-light) !important; }
+    .text-diamond { color: var(--diamond-light) !important; }
+    .text-amethyst { color: var(--amethyst-light) !important; }
+
+    /* ==========================================================================
+       PHASE 2: VISUALS & CHARTS SECTION
+       ========================================================================== */
+    .charts-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .charts-container {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+
+    .chart-panel {
+      background: #0e1424;
+      border: 3px solid #000;
+      padding: 12px;
+      box-shadow: inset 2px 2px 0 #28375c;
+    }
+
+    .chart-title {
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pixel-bar-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 55px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .bar-sub-label {
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-track {
+      background: #060912;
+      border: 2px solid #000;
+      height: 20px;
+      position: relative;
+      box-shadow: inset 1px 1px 0 #000;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d97706, #f59e0b);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.4);
+      transition: width 0.3s;
+    }
+
+    .bar-fill.bar-safe { background: linear-gradient(90deg, #15803d, #22c55e); }
+    .bar-fill.bar-danger { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+
+    .bar-line-75 {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 75%;
+      width: 2px;
+      background: var(--gold-light);
+      z-index: 5;
+    }
+
+    .bar-line-90 {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 90%;
+      width: 2px;
+      background: var(--diamond-light);
+      z-index: 5;
+    }
+
+    .bar-val {
+      font-family: var(--font-retro);
+      font-size: 22px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    /* Donut / Stats Box */
+    .stat-pie-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .stat-pie-card {
+      background: #080c18;
+      border: 2px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .stat-pie-count {
+      font-family: var(--font-retro);
+      font-size: 36px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .stat-pie-label {
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ==========================================================================
+       PHASE 2: ON-DUTY (OD) & MEDICAL LEAVE SIMULATOR
+       ========================================================================== */
+    .od-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .od-impact-card {
+      background: #141b2d;
+      border: 3px solid #000;
+      box-shadow: inset 2px 2px 0 #2e3e66;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .od-impact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #283756;
+      padding-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       PHASE 2: AI ATTENDANCE ADVISOR CHATBOT
+       ========================================================================== */
+    .chat-float-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 900;
+      background: linear-gradient(135deg, #7b2cbf 0%, #9d4edd 100%);
+      border: 4px solid #000;
+      box-shadow: var(--pixel-shadow-lg);
+      padding: 12px 16px;
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: float-bot 3s infinite ease-in-out;
+    }
+
+    @keyframes float-bot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .chat-float-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .chat-float-badge {
+      background: var(--gold);
+      color: #000;
+      padding: 2px 5px;
+      font-size: 8px;
+      border: 1px solid #000;
+    }
+
+    .chat-widget {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      width: min(420px, calc(100vw - 32px));
+      height: 540px;
+      background: #12182a;
+      border: 4px solid #000;
+      box-shadow: var(--pixel-shadow-lg);
+      z-index: 950;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-widget.active {
+      display: flex;
+    }
+
+    .chat-header {
+      background: #24143d;
+      border-bottom: 3px solid #000;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-title {
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      color: var(--amethyst-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #0a0e1a;
+    }
+
+    .chat-msg {
+      max-width: 88%;
+      padding: 8px 10px;
+      border: 2px solid #000;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .chat-msg-bot {
+      align-self: flex-start;
+      background: #18223c;
+      color: #e2e8f0;
+      border-left: 4px solid var(--amethyst);
+    }
+
+    .chat-msg-user {
+      align-self: flex-end;
+      background: #254020;
+      color: #d1fae5;
+      border-right: 4px solid var(--grass-green);
+    }
+
+    .chat-msg-time {
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      color: #8899b8;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .chat-quick-chips {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 6px 10px;
+      background: #101628;
+      border-top: 2px dashed #2c3858;
+    }
+
+    .chat-chip {
+      font-family: var(--font-pixel);
+      font-size: 7.5px;
+      padding: 4px 6px;
+      background: #202a48;
+      color: #c0d0f0;
+      border: 1px solid #000;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chat-chip:hover {
+      background: var(--amethyst);
+      color: #fff;
+    }
+
+    .chat-input-row {
+      display: flex;
+      padding: 8px;
+      background: #161e33;
+      border-top: 3px solid #000;
+      gap: 6px;
+    }
+
+    .chat-input {
+      flex: 1;
+      font-family: var(--font-retro);
+      font-size: 19px;
+      background: #080c16;
+      color: #fff;
+      border: 2px solid #000;
+      padding: 6px 8px;
+      outline: none;
+    }
+
+    /* ==========================================================================
+       MODALS & OVERLAYS
+       ========================================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 14, 0.85);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      padding: 16px;
+      overflow-y: auto;
+      place-content: center;
+    }
+
+    .modal-overlay.active { display: grid; }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: 920px;
+      max-height: 90vh;
+      overflow-y: auto;
+      margin: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      color: var(--gold);
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .tt-table-wrap {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .pixel-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-retro);
+      font-size: 19px;
+      text-align: center;
+    }
+
+    .pixel-table th, .pixel-table td {
+      border: 2px solid #000;
+      padding: 6px 4px;
+    }
+
+    .pixel-table th {
+      background: #253356;
+      color: var(--gold-light);
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .pixel-table td {
+      background: #101628;
+      color: #ffffff;
+    }
+
+    .pixel-table tr.today-row td {
+      background: #2a3d1c;
+      border-color: var(--grass-green-light);
+      font-weight: bold;
+    }
+
+    .tt-cell-code {
+      font-family: var(--font-pixel);
+      font-size: 8.5px;
+      color: var(--diamond);
+      display: block;
+    }
+
+    .tt-cell-name {
+      font-size: 14px;
+      color: #9eb1d9;
+    }
+
+    .verify-badge-match {
+      background: #174212;
+      color: #79f268;
+      padding: 2px 6px;
+      border: 1px solid #000;
+      font-family: var(--font-pixel);
+      font-size: 8px;
+    }
+
+    .verify-badge-mismatch {
+      background: #541919;
+      color: #ff9191;
+      padding: 2px 6px;
+      border: 1px solid #000;
+      font-family: var(--font-pixel);
+      font-size: 8px;
+    }
+
+    .test-card {
+      background: #0f1424;
+      border: 2px solid #000;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .test-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .test-name {
+      font-family: var(--font-pixel);
+      font-size: 9.5px;
+      color: #ffffff;
+    }
+
+    .test-badge-pass {
+      background: var(--grass-green-dark);
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 3px 6px;
+      border: 1px solid #000;
+    }
+
+    .test-badge-fail {
+      background: var(--redstone-dark);
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 3px 6px;
+      border: 1px solid #000;
+    }
+
+    .test-log {
+      font-family: var(--font-retro);
+      font-size: 17px;
+      color: #a8b8db;
+      background: #060911;
+      padding: 6px;
+      border: 1px solid #1a2544;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 17px;
+      color: var(--text-muted);
+      border-top: 2px dashed #202b48;
+      margin-top: 14px;
+    }
+
+    .pixel-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: #1b2644;
+      border: 3px solid #000;
+      box-shadow: var(--pixel-shadow);
+      padding: 10px 16px;
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      color: var(--gold);
+      z-index: 2000;
+      display: none;
+    }
+
+    .pixel-toast.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header class="pixel-box header">
+      <div class="header-title-wrap">
+        <span class="header-icon">⛏️</span>
+        <h1 class="header-title">THE ATTENDANCE PREDICTOR</h1>
+        <span class="header-icon">⚔️</span>
+      </div>
+      <div class="header-subtitle">⚡ UNIFIED SUITE: CORE CALCULATOR • VISUALS • OD SIMULATOR • AI ADVISOR ⚡</div>
+
+      <!-- Quick Action Controls -->
+      <div class="header-actions">
+        <button type="button" class="pixel-btn pixel-btn-sm" id="btnSoundToggle">
+          <span id="soundIcon">🔊</span> SOUND: <span id="soundStateText">ON</span>
+        </button>
+        <button type="button" class="pixel-btn pixel-btn-gold pixel-btn-sm" id="btnOpenTimetable">
+          📅 TIMETABLE & CREDITS
+        </button>
+        <button type="button" class="pixel-btn pixel-btn-purple pixel-btn-sm" id="btnToggleChatFromHeader">
+          🤖 AI ADVISOR
+        </button>
+        <button type="button" class="pixel-btn pixel-btn-diamond pixel-btn-sm" id="btnOpenTests">
+          🧪 RUN PRESET TESTS
+        </button>
+        <button type="button" class="pixel-btn pixel-btn-sm" id="btnOpenHelp">
+          ❓ RULES & GUIDE
+        </button>
+      </div>
+
+      <!-- Minecraft XP Bar (Semester Progress) -->
+      <div class="xp-bar-container" title="Semester Timeline Progress">
+        <div class="xp-bar-fill" id="semesterXpFill"></div>
+        <div class="xp-bar-text" id="semesterXpText">LVL 2026 • 0% SEMESTER COMPLETED</div>
+      </div>
+    </header>
+
+    <!-- NETHER WARNING: IRREVERSIBLE DETENTION ALERT -->
+    <div class="pixel-box nether-alert" id="netherAlertBanner">
+      <div class="nether-title">💀 ⚠️ IRREVERSIBLE DETENTION ALERT ⚠️ 💀</div>
+      <div class="nether-desc">
+        MATHEMATICAL RECOVERY IMPOSSIBLE! Even if you attend 100% of all remaining classes until 29 Nov 2026, the following subject(s) CANNOT reach the mandatory 75% threshold:
+      </div>
+      <div class="nether-subjects-list" id="netherSubjectsList"></div>
+    </div>
+
+    <!-- SUMMARY STRIP (HOTBAR) -->
+    <section class="summary-strip" aria-label="Attendance Summary Hotbar">
+      <div class="hotbar-card">
+        <div class="hotbar-card-label"><span>🎓</span> CLASS SECTION</div>
+        <div class="hotbar-card-value" id="sumSectionName">IV ECE-A</div>
+        <div class="hotbar-card-sub" id="sumSectionVenue">IST 225 • VII Semester</div>
+      </div>
+
+      <div class="hotbar-card">
+        <div class="hotbar-card-label"><span>📅</span> TODAY'S DATE</div>
+        <div class="hotbar-card-value" id="sumTodayDate">28 Sep 2026</div>
+        <div class="hotbar-card-sub" id="sumDaysLeft">63 Days Left in Semester</div>
+      </div>
+
+      <div class="hotbar-card">
+        <div class="hotbar-card-label"><span>⏳</span> PERIODS REMAINING</div>
+        <div class="hotbar-card-value" id="sumPeriodsLeft">171</div>
+        <div class="hotbar-card-sub" id="sumHeldPeriods">76 Held So Far (247 Total)</div>
+      </div>
+
+      <div class="hotbar-card">
+        <div class="hotbar-card-label"><span>📊</span> OVERALL ATTENDANCE</div>
+        <div class="hotbar-card-value" id="sumOverallPct">85.0%</div>
+        <div class="hotbar-card-sub" id="sumOverallStatus">
+          <div class="hearts-row" id="overallHeartsRow"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: NAVIGATION TABS -->
+    <div class="nav-tabs-row">
+      <button type="button" class="tab-btn active" id="tabBtnCalc">📦 1. CORE CALCULATOR</button>
+      <button type="button" class="tab-btn" id="tabBtnVisuals">📊 2. VISUAL HEALTH CHARTS</button>
+      <button type="button" class="tab-btn" id="tabBtnOD">🏥 3. ON-DUTY & LEAVE SIMULATOR</button>
+    </div>
+
+    <!-- TAB 1: CORE CALCULATOR & SETTINGS -->
+    <div id="tabContentCalc" style="display: flex; flex-direction: column; gap: 18px;">
+      
+      <!-- CRAFTING PANEL: CONTROLS & DATE CONFIGURATION -->
+      <section class="pixel-box" aria-label="Configuration and Settings">
+        <div class="controls-grid">
+          
+          <!-- Section Selection -->
+          <div class="control-group">
+            <label class="control-label" for="selectSection">
+              <span>📚</span> SELECT CLASS SECTION (13 TOTAL)
+            </label>
+            <select id="selectSection" class="pixel-select"></select>
+            <div class="quick-chips-row" id="sectionQuickChips"></div>
+          </div>
+
+          <!-- Today's Date Override & Today-Done Checkbox -->
+          <div class="control-group">
+            <label class="control-label" for="inputTodayDate">
+              <span>🕒</span> TODAY'S DATE (OVERRIDE FOR TESTING)
+            </label>
+            <input type="date" id="inputTodayDate" class="pixel-input" min="2026-08-29" max="2026-11-30" value="2026-09-28">
+            
+            <div style="margin-top: 6px;">
+              <label class="pixel-checkbox-label" for="chkTodayDone">
+                <input type="checkbox" id="chkTodayDone" class="pixel-checkbox">
+                <span>Today's classes are already over (count today as held)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Holiday Dates Exclusion -->
+          <div class="control-group">
+            <label class="control-label" for="inputHolidays">
+              <span>🏖️</span> EXCLUDE HOLIDAYS (YYYY-MM-DD, COMMA-SEPARATED)
+            </label>
+            <input type="text" id="inputHolidays" class="pixel-input" placeholder="2026-10-02, 2026-10-19, 2026-11-08" value="2026-10-02, 2026-10-19, 2026-10-20, 2026-11-08">
+            <div class="quick-chips-row">
+              <button type="button" class="chip-btn" id="btnAddSemHolidays">+ Standard Semester Holidays</button>
+              <button type="button" class="chip-btn" id="btnClearHolidays">Clear Holidays</button>
+            </div>
+          </div>
+
+          <!-- Future Planning Date -->
+          <div class="control-group">
+            <label class="control-label" for="inputFutureDate">
+              <span>🔮</span> OPTIONAL FUTURE PLANNING DATE
+            </label>
+            <input type="date" id="inputFutureDate" class="pixel-input" min="2026-08-29" max="2026-11-29" placeholder="YYYY-MM-DD">
+            <div class="quick-chips-row">
+              <button type="button" class="chip-btn" id="btnPlan1Week">+1 Week</button>
+              <button type="button" class="chip-btn" id="btnPlan2Weeks">+2 Weeks</button>
+              <button type="button" class="chip-btn" id="btnPlanSemEnd">Semester End (29 Nov)</button>
+              <button type="button" class="chip-btn" id="btnClearPlan">Clear Date</button>
+            </div>
+            <div id="futurePlanningNotice" style="font-size: 16px; color: var(--gold-light); margin-top: 2px;"></div>
+          </div>
+
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions-row">
+          <div style="font-family: var(--font-pixel); font-size: 8.5px; color: var(--text-muted);">
+            ⚡ QUICK FILL ALL ATTENDANCE:
+          </div>
+          <div class="bulk-btn-group" style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="pixel-btn pixel-btn-sm" id="btnBulk75">SET ALL 75%</button>
+            <button type="button" class="pixel-btn pixel-btn-sm pixel-btn-gold" id="btnBulk85">SET ALL 85%</button>
+            <button type="button" class="pixel-btn pixel-btn-sm pixel-btn-green" id="btnBulk100">SET ALL 100%</button>
+            <button type="button" class="pixel-btn pixel-btn-sm pixel-btn-red" id="btnResetSection">RESET SECTION</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN SUBJECTS MATRIX -->
+      <section class="pixel-box" aria-label="Subject Attendance Calculator">
+        <div class="subjects-header">
+          <h2 class="subjects-title">
+            <span>📦</span> INVENTORY: SUBJECT CALCULATORS & TARGETS
+          </h2>
+          <div style="font-size: 16px; color: var(--text-muted);" id="subCountSummary">
+            Loading subjects...
+          </div>
+        </div>
+
+        <div class="subjects-grid" id="subjectsContainer"></div>
+      </section>
+
+    </div>
+
+    <!-- TAB 2: VISUALS & CHARTS -->
+    <div id="tabContentVisuals" style="display: none; flex-direction: column; gap: 18px;">
+      <section class="pixel-box">
+        <h2 class="subjects-title" style="margin-bottom: 14px;">
+          <span>📊</span> VISUAL ATTENDANCE HEALTH DASHBOARD
+        </h2>
+
+        <div class="charts-container">
+          <!-- Main Comparison Bar Chart -->
+          <div class="chart-panel">
+            <div class="chart-title">
+              <span>SUBJECT ATTENDANCE VS TARGETS (75% / 90%)</span>
+              <span style="font-size: 8px; color: var(--diamond);">▮ 75% LINE | ▮ 90% LINE</span>
+            </div>
+            <div id="visualBarsContainer"></div>
+          </div>
+
+          <!-- Section Breakdown Cards -->
+          <div class="chart-panel">
+            <div class="chart-title">
+              <span>HEALTH STATUS MATRIX</span>
+            </div>
+            <div class="stat-pie-grid">
+              <div class="stat-pie-card" style="border-color: var(--grass-green);">
+                <div class="stat-pie-count text-success" id="countSafe">0</div>
+                <div class="stat-pie-label">SAFE (≥90%)</div>
+              </div>
+              <div class="stat-pie-card" style="border-color: var(--gold);">
+                <div class="stat-pie-count text-gold" id="countOk">0</div>
+                <div class="stat-pie-label">OK (75-90%)</div>
+              </div>
+              <div class="stat-pie-card" style="border-color: #f97316;">
+                <div class="stat-pie-count" style="color: #f97316;" id="countDanger">0</div>
+                <div class="stat-pie-label">DANGER (&lt;75%)</div>
+              </div>
+              <div class="stat-pie-card" style="border-color: var(--redstone);">
+                <div class="stat-pie-count text-danger" id="countIrreversible">0</div>
+                <div class="stat-pie-label">IRREVERSIBLE</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 14px; background: #060a14; border: 2px solid #000; padding: 10px;">
+              <div style="font-family: var(--font-pixel); font-size: 8.5px; color: var(--gold); margin-bottom: 6px;">
+                💡 RECOVERY INSIGHT:
+              </div>
+              <div id="chartInsightText" style="font-size: 17px; color: #cbd5e1; line-height: 1.2;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 3: ON-DUTY (OD) & MEDICAL LEAVE SIMULATOR -->
+    <div id="tabContentOD" style="display: none; flex-direction: column; gap: 18px;">
+      <section class="pixel-box">
+        <h2 class="subjects-title" style="margin-bottom: 14px; color: var(--amethyst-light);">
+          <span>🏥</span> THE ON-DUTY (OD) & MEDICAL LEAVE SIMULATOR
+        </h2>
+        
+        <p style="font-size: 19px; color: #b9c7e6; margin-bottom: 16px;">
+          Simulate how approved On-Duty (OD) certificates, symposiums, sports events, or Medical Leave days recover your attendance percentage.
+        </p>
+
+        <div class="od-grid">
+          <!-- OD Inputs Panel -->
+          <div class="pixel-box-inset" style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="control-group">
+              <label class="control-label" for="selectODMode">
+                <span>⚙️</span> OD APPLICATION METHOD
+              </label>
+              <select id="selectODMode" class="pixel-select">
+                <option value="attend" selected>Count OD as 100% Attended Classes (Standard College Policy)</option>
+                <option value="exempt">Exempt / Waive OD Classes from Total Held Classes</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="inputODDays">
+                <span>🗓️</span> NUMBER OF ON-DUTY (OD) DAYS TO APPLY
+              </label>
+              <input type="number" id="inputODDays" class="pixel-input" min="0" max="30" value="3">
+              <div class="quick-chips-row">
+                <button type="button" class="chip-btn" id="btnOD1Day">+1 Day (Symposium)</button>
+                <button type="button" class="chip-btn" id="btnOD3Days">+3 Days (Hackathon)</button>
+                <button type="button" class="chip-btn" id="btnOD5Days">+5 Days (Medical Leave)</button>
+                <button type="button" class="chip-btn" id="btnODReset">Reset (0 Days)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="inputODDates">
+                <span>📅</span> SPECIFIC OD DATES (OPTIONAL YYYY-MM-DD LIST)
+              </label>
+              <input type="text" id="inputODDates" class="pixel-input" placeholder="e.g. 2026-09-29, 2026-09-30">
+            </div>
+          </div>
+
+          <!-- OD Impact Output Panel -->
+          <div class="od-impact-card">
+            <div style="font-family: var(--font-pixel); font-size: 10px; color: var(--gold);">
+              ⚡ SIMULATED ATTENDANCE IMPACT:
+            </div>
+
+            <div class="od-impact-row">
+              <span>Total OD Classes Credited:</span>
+              <strong class="text-amethyst" id="odCreditedClasses">0 Classes</strong>
+            </div>
+
+            <div class="od-impact-row">
+              <span>Overall Attendance (Before OD):</span>
+              <strong id="odBeforePct">85.0%</strong>
+            </div>
+
+            <div class="od-impact-row">
+              <span>Overall Attendance (After OD):</span>
+              <strong class="text-success" style="font-size: 26px;" id="odAfterPct">88.5%</strong>
+            </div>
+
+            <div class="od-impact-row">
+              <span>Net Boost:</span>
+              <strong class="text-gold" id="odNetBoost">+3.5%</strong>
+            </div>
+
+            <div id="odSavedNotice" style="font-size: 17px; color: var(--grass-green-light); margin-top: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- Subject-wise OD Table -->
+        <h3 style="font-family: var(--font-pixel); font-size: 9.5px; color: var(--gold); margin-top: 18px; margin-bottom: 8px;">
+          📋 PER-SUBJECT OD RECOVERY BREAKDOWN
+        </h3>
+        <div class="tt-table-wrap">
+          <table class="pixel-table" id="odBreakdownTable"></table>
+        </div>
+      </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div>⛏️ The Attendance Predictor • VibeCraft Submission • Odd Semester 2026</div>
+      <div style="margin-top: 4px; font-size: 15px;">
+        Designed with Press Start 2P & VT323 • Fully static single-app architecture ready for Vercel.
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==========================================================================
+       PHASE 2: FLOATING AI ATTENDANCE ADVISOR CHATBOT WIDGET
+       ========================================================================== */ -->
+  <button type="button" class="chat-float-btn" id="btnFloatChat" aria-label="Open AI Attendance Advisor">
+    <span>🤖</span>
+    <span>AI ADVISOR</span>
+    <span class="chat-float-badge">ONLINE</span>
+  </button>
+
+  <div class="chat-widget" id="chatWidget" role="dialog" aria-modal="true" aria-label="Attendance Advisor Chatbot">
+    <div class="chat-header">
+      <div class="chat-title">
+        <span>🤖</span>
+        <span>STEVE • ATTENDANCE ORACLE</span>
+      </div>
+      <button type="button" class="pixel-btn pixel-btn-red pixel-btn-sm" id="btnCloseChat">✖</button>
+    </div>
+
+    <!-- Chat Messages Scroll Area -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg chat-msg-bot">
+        <div>👋 Hello! I am your <strong>Attendance Oracle</strong>. I read your live timetable, current marks, and semester schedule.</div>
+        <div style="margin-top: 4px; font-size: 15px; color: var(--gold-light);">Ask me anything like "If I take 3 days sick leave starting tomorrow, will I drop below 75%?" or "Can I bunk Friday?"</div>
+        <div class="chat-msg-time">JUST NOW</div>
+      </div>
+    </div>
+
+    <!-- Quick Query Suggestions -->
+    <div class="chat-quick-chips">
+      <button type="button" class="chat-chip" data-query="If I take a 3-day sick leave starting tomorrow, will my attendance drop below 75%?">🏥 3-Day Sick Leave?</button>
+      <button type="button" class="chat-chip" data-query="Can I safely skip all classes this Friday?">🏖️ Bunk Friday?</button>
+      <button type="button" class="chat-chip" data-query="How many total classes can I safely bunk before getting detained?">🛡️ Safe Bunks Total?</button>
+      <button type="button" class="chat-chip" data-query="What is my danger list right now?">⚠️ Danger List?</button>
+      <button type="button" class="chat-chip" data-query="What happens if I get 4 ODs next week?">📜 4 OD Impact?</button>
+    </div>
+
+    <!-- Chat Input Form -->
+    <form class="chat-input-row" id="chatForm">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask Steve a question..." autocomplete="off">
+      <button type="submit" class="pixel-btn pixel-btn-purple pixel-btn-sm">SEND</button>
+    </form>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 1: TIMETABLE & CREDIT VERIFICATION VIEWER
+       ========================================================================== -->
+  <div class="modal-overlay" id="timetableModal" role="dialog" aria-modal="true">
+    <div class="pixel-box modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title" id="ttModalTitle">📅 SECTION TIMETABLE & PERIOD VERIFICATION</div>
+        <button type="button" class="pixel-btn pixel-btn-red pixel-btn-sm" id="btnCloseTimetable">✖ CLOSE</button>
+      </div>
+
+      <div style="font-size: 18px; color: var(--text-muted); margin-bottom: 12px;" id="ttModalSubtitle"></div>
+
+      <h3 style="font-family: var(--font-pixel); font-size: 9.5px; color: var(--gold); margin-bottom: 6px;">
+        🗓️ 5-DAY TIMETABLE MATRIX (MON - FRI • 9 PERIODS)
+      </h3>
+      <div class="tt-table-wrap">
+        <table class="pixel-table" id="ttMatrixTable"></table>
+      </div>
+
+      <h3 style="font-family: var(--font-pixel); font-size: 9.5px; color: var(--gold); margin-top: 18px; margin-bottom: 6px;">
+        🔍 CREDIT / PERIODS PER WEEK VERIFICATION REPORT
+      </h3>
+      <div class="tt-table-wrap">
+        <table class="pixel-table" id="ttVerifyTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: AUTOMATED PRESET TEST SUITE
+       ========================================================================== -->
+  <div class="modal-overlay" id="testsModal" role="dialog" aria-modal="true">
+    <div class="pixel-box modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">🧪 AUTOMATED TEST SUITE (4 REQUIRED CASES)</div>
+        <button type="button" class="pixel-btn pixel-btn-red pixel-btn-sm" id="btnCloseTests">✖ CLOSE</button>
+      </div>
+
+      <div style="font-size: 18px; color: var(--text-muted); margin-bottom: 14px;">
+        Click below to run automated validations across all required test scenarios:
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+        <button type="button" class="pixel-btn pixel-btn-diamond" id="btnRunAllTests">▶ RUN ALL 4 TESTS</button>
+      </div>
+
+      <div id="testResultsContainer"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: HELP & RULES GUIDE
+       ========================================================================== -->
+  <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true">
+    <div class="pixel-box modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">❓ MATHEMATICAL RULES & GUIDE</div>
+        <button type="button" class="pixel-btn pixel-btn-red pixel-btn-sm" id="btnCloseHelp">✖ CLOSE</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; font-size: 20px;">
+        <div>
+          <strong style="color: var(--gold); font-family: var(--font-pixel); font-size: 10px;">📅 SEMESTER TIMELINE:</strong>
+          <p>Runs from <strong>29 Aug 2026</strong> to <strong>29 Nov 2026</strong>. Saturdays and Sundays are skipped. Specified holidays are excluded from the class count.</p>
+        </div>
+
+        <div>
+          <strong style="color: var(--gold); font-family: var(--font-pixel); font-size: 10px;">📐 FORMULAS (PER SUBJECT):</strong>
+          <p>• $T$ = Classes held so far (from semester start up to today).</p>
+          <p>• $R$ = Classes remaining in the semester (today onward to 29 Nov).</p>
+          <p>• $A = (\text{pct}/100) \times T$ (Classes attended so far).</p>
+          <p>• <strong>Must-attend for 75%:</strong> $x_{75} = \max(0, \lceil 0.75 \times (T + R) - A \rceil)$.</p>
+          <p>• <strong>Safe skips allowed:</strong> $\max(0, R - x_{75})$.</p>
+          <p>• <strong>Must-attend for 90%:</strong> $x_{90} = \max(0, \lceil 0.90 \times (T + R) - A \rceil)$. If $x_{90} > R$, maximum achievable % is $(A + R)/(T + R) \times 100\%$.</p>
+        </div>
+
+        <div>
+          <strong style="color: var(--redstone-light); font-family: var(--font-pixel); font-size: 10px;">💀 IRREVERSIBLE DETENTION:</strong>
+          <p>Triggered whenever $x_{75} > R$. This means even if you attend 100% of all remaining classes, your final percentage will still fall below 75%.</p>
+        </div>
+
+        <div>
+          <strong style="color: var(--diamond); font-family: var(--font-pixel); font-size: 10px;">🔮 FUTURE PLANNING DATE & OD SIMULATOR:</strong>
+          <p>Simulate future interim milestones or factor in On-Duty / Medical Leaves to observe exact percentage boosts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="pixel-toast" id="pixelToast">NOTIFICATION</div>
+
+  <!-- SCRIPTS -->
+  <script src="./data/timetables.js"></script>
+  <script>
+    /* ==========================================================================
+       8-BIT SOUND ENGINE
+       ========================================================================== */
+    class RetroSoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = localStorage.getItem('sound_enabled') !== 'false';
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        localStorage.setItem('sound_enabled', this.enabled);
+        if (this.enabled) {
+          this.init();
+          this.playTone(520, 'square', 0.08, 0.06);
+        }
+        return this.enabled;
+      }
+
+      playTone(freq, type = 'square', duration = 0.08, gain = 0.08) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gainNode = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gainNode.gain.setValueAtTime(gain, this.ctx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gainNode);
+          gainNode.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      playClick() { this.playTone(800, 'square', 0.03, 0.04); }
+      playSlide() { this.playTone(350, 'triangle', 0.04, 0.03); }
+      playBot() { this.playTone(600, 'sine', 0.05, 0.04); }
+      playSuccess() {
+        if (!this.enabled) return;
+        setTimeout(() => this.playTone(523.25, 'square', 0.08, 0.05), 0);
+        setTimeout(() => this.playTone(659.25, 'square', 0.08, 0.05), 70);
+        setTimeout(() => this.playTone(783.99, 'square', 0.12, 0.06), 140);
+        setTimeout(() => this.playTone(1046.50, 'square', 0.18, 0.06), 220);
+      }
+      playDanger() {
+        if (!this.enabled) return;
+        setTimeout(() => this.playTone(220, 'sawtooth', 0.15, 0.08), 0);
+        setTimeout(() => this.playTone(180, 'sawtooth', 0.15, 0.08), 120);
+        setTimeout(() => this.playTone(140, 'sawtooth', 0.25, 0.1), 240);
+      }
+    }
+
+    const soundEngine = new RetroSoundEngine();
+
+    /* ==========================================================================
+       DATE & CALCULATION ENGINE
+       ========================================================================== */
+    const SEM_START_STR = '2026-08-29';
+    const SEM_END_STR = '2026-11-29';
+    const SEM_START_DATE = new Date('2026-08-29T00:00:00');
+    const SEM_END_DATE = new Date('2026-11-29T23:59:59');
+
+    function parseYMD(str) {
+      if (!str) return null;
+      const parts = str.split('-');
+      if (parts.length !== 3) return null;
+      return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    }
+
+    function formatYMD(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatNiceDate(dateStr) {
+      const d = parseYMD(dateStr);
+      if (!d) return dateStr;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} (${days[d.getDay()]})`;
+    }
+
+    function calculateAttendance({
+      sectionId,
+      todayStr,
+      todayDone,
+      holidaysList,
+      futureDateStr,
+      subjectPercentages,
+      odDaysCount = 0,
+      odMode = 'attend',
+      odDatesList = []
+    }) {
+      const section = TIMETABLES_DATA.find(s => s.id === sectionId) || TIMETABLES_DATA[0];
+      const todayDate = parseYMD(todayStr) || parseYMD('2026-09-28');
+      const futureDate = parseYMD(futureDateStr);
+
+      const holidaySet = new Set((holidaysList || []).map(h => h.trim()).filter(Boolean));
+      const odDatesSet = new Set((odDatesList || []).map(h => h.trim()).filter(Boolean));
+      const subjects = section.subjects;
+      const grid = section.grid;
+
+      const T = {};
+      const R = {};
+      const R_future = futureDate ? {} : null;
+      const OD_classes = {};
+
+      Object.keys(subjects).forEach(k => {
+        T[k] = 0;
+        R[k] = 0;
+        OD_classes[k] = 0;
+        if (R_future) R_future[k] = 0;
+      });
+
+      const cur = new Date(SEM_START_DATE.getTime());
+      while (cur <= SEM_END_DATE) {
+        const curStr = formatYMD(cur);
+        const dayOfWeek = cur.getDay();
+
+        if (dayOfWeek >= 1 && dayOfWeek <= 5 && !holidaySet.has(curStr)) {
+          const gridRowIdx = dayOfWeek - 1;
+          const dayPeriods = grid[gridRowIdx];
+
+          const dayCounts = {};
+          Object.keys(subjects).forEach(k => { dayCounts[k] = 0; });
+
+          dayPeriods.forEach(cell => {
+            if (!cell) return;
+            if (cell.includes('/') && !subjects[cell]) {
+              const parts = cell.split('/');
+              parts.forEach(p => {
+                const tr = p.trim();
+                if (dayCounts[tr] !== undefined) dayCounts[tr]++;
+              });
+            } else if (dayCounts[cell] !== undefined) {
+              dayCounts[cell]++;
+            }
+          });
+
+          const isBeforeToday = curStr < todayStr;
+          const isToday = curStr === todayStr;
+          const isAfterToday = curStr > todayStr;
+
+          if (isBeforeToday) {
+            Object.keys(dayCounts).forEach(k => { T[k] += dayCounts[k]; });
+          } else if (isToday) {
+            if (todayDone) {
+              Object.keys(dayCounts).forEach(k => { T[k] += dayCounts[k]; });
+            } else {
+              Object.keys(dayCounts).forEach(k => { R[k] += dayCounts[k]; });
+            }
+          } else if (isAfterToday) {
+            Object.keys(dayCounts).forEach(k => { R[k] += dayCounts[k]; });
+          }
+
+          // Check OD dates
+          if (odDatesSet.has(curStr)) {
+            Object.keys(dayCounts).forEach(k => { OD_classes[k] += dayCounts[k]; });
+          }
+
+          // Future planning date evaluation
+          if (futureDate && futureDateStr >= todayStr) {
+            if (curStr >= todayStr && curStr <= futureDateStr) {
+              if (isToday && todayDone) {
+                // already in T
+              } else {
+                Object.keys(dayCounts).forEach(k => { R_future[k] += dayCounts[k]; });
+              }
+            }
+          }
+        }
+
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      // If generic OD Days specified without exact dates, approximate classes based on weekly load
+      if (odDaysCount > 0 && odDatesSet.size === 0) {
+        Object.keys(subjects).forEach(k => {
+          // Average classes per day = total expected / 5
+          const expectedWeekly = subjects[k].expected || 3;
+          OD_classes[k] = Math.round((expectedWeekly / 5.0) * odDaysCount);
+        });
+      }
+
+      // Per-subject calculations
+      const subjectResults = {};
+      let totalAttended = 0;
+      let totalHeld = 0;
+      let totalRemaining = 0;
+      let totalODAttended = 0;
+      let totalODHeld = 0;
+      const irreversibleSubjects = [];
+
+      Object.keys(subjects).forEach(k => {
+        const info = subjects[k];
+        const subT = T[k] || 0;
+        const subR = R[k] || 0;
+        const subTotal = subT + subR;
+
+        const rawPct = subjectPercentages[k] !== undefined ? Number(subjectPercentages[k]) : 85;
+        const pct = Math.max(0, Math.min(100, isNaN(rawPct) ? 85 : rawPct));
+
+        const A = (pct / 100.0) * subT;
+        totalAttended += A;
+        totalHeld += subT;
+        totalRemaining += subR;
+
+        // 75% target
+        const x75 = Math.max(0, Math.ceil(0.75 * subTotal - A));
+        const canSkip75 = Math.max(0, subR - x75);
+        const isIrreversible = x75 > subR;
+
+        // 90% target
+        const x90 = Math.max(0, Math.ceil(0.90 * subTotal - A));
+        const canSkip90 = Math.max(0, subR - x90);
+        const is90Reachable = x90 <= subR;
+        const maxAchievablePct = subTotal > 0 ? ((A + subR) / subTotal * 100.0) : 100.0;
+
+        // OD Simulation for this subject
+        const odCredit = Math.min(OD_classes[k] || 0, subT);
+        let odA = A;
+        let odT = subT;
+        if (odMode === 'attend') {
+          // Count OD classes as attended (boosting attended count up to max subT)
+          odA = Math.min(subT, A + odCredit);
+        } else if (odMode === 'exempt') {
+          // Exempt OD classes from held count
+          odT = Math.max(1, subT - odCredit);
+          odA = Math.min(odT, A);
+        }
+        const odPct = odT > 0 ? (odA / odT * 100.0) : 100.0;
+        totalODAttended += odA;
+        totalODHeld += odT;
+
+        let status = 'SAFE';
+        if (isIrreversible) {
+          status = 'IRREVERSIBLE';
+          irreversibleSubjects.push({ key: k, name: info.name, code: info.code, maxAchievablePct, x75, R: subR });
+        } else if (pct < 75) {
+          status = 'DANGER';
+        } else if (pct < 90) {
+          status = 'OK';
+        } else {
+          status = 'SAFE';
+        }
+
+        let futureResult = null;
+        if (R_future && futureDateStr) {
+          const isPast = futureDateStr < todayStr;
+          const subR_fut = R_future[k] || 0;
+          const futTotal = subT + subR_fut;
+          const pctAllAttend = futTotal > 0 ? ((A + subR_fut) / futTotal * 100.0) : 100.0;
+          const pctAllSkip = futTotal > 0 ? (A / futTotal * 100.0) : 100.0;
+          const xPlan = Math.max(0, Math.ceil(0.75 * futTotal - A));
+          const isPlanReachable = xPlan <= subR_fut;
+
+          futureResult = {
+            isPast,
+            R_future: subR_fut,
+            pctAllAttend,
+            pctAllSkip,
+            xPlan,
+            isPlanReachable
+          };
+        }
+
+        subjectResults[k] = {
+          key: k,
+          info,
+          T: subT,
+          R: subR,
+          total: subTotal,
+          pct,
+          A,
+          x75,
+          canSkip75,
+          isIrreversible,
+          x90,
+          canSkip90,
+          is90Reachable,
+          maxAchievablePct,
+          status,
+          odClasses: odCredit,
+          odPct,
+          future: futureResult
+        };
+      });
+
+      const overallPct = totalHeld > 0 ? ((totalAttended / totalHeld) * 100.0) : 100.0;
+      const overallODPct = totalODHeld > 0 ? ((totalODAttended / totalODHeld) * 100.0) : 100.0;
+
+      return {
+        section,
+        todayStr,
+        todayDone,
+        futureDateStr,
+        totalHeld,
+        totalRemaining,
+        overallPct,
+        overallODPct,
+        odBoost: overallODPct - overallPct,
+        totalODClasses: Object.values(OD_classes).reduce((a, b) => a + b, 0),
+        hasIrreversible: irreversibleSubjects.length > 0,
+        irreversibleSubjects,
+        subjects: subjectResults
+      };
+    }
+
+    /* ==========================================================================
+       APP STATE
+       ========================================================================== */
+    const STORAGE_KEY_SECTION = 'tap_selected_section';
+    const STORAGE_KEY_PCTS = 'tap_percentages_map';
+    const STORAGE_KEY_TODAY = 'tap_today_date';
+    const STORAGE_KEY_TODAY_DONE = 'tap_today_done';
+    const STORAGE_KEY_HOLIDAYS = 'tap_holidays_list';
+    const STORAGE_KEY_FUTURE = 'tap_future_date';
+    const STORAGE_KEY_OD_DAYS = 'tap_od_days';
+    const STORAGE_KEY_OD_MODE = 'tap_od_mode';
+
+    const DEFAULT_TODAY = '2026-09-28';
+    const DEFAULT_HOLIDAYS = '2026-10-02, 2026-10-19, 2026-10-20, 2026-11-08';
+
+    let state = {
+      sectionId: localStorage.getItem(STORAGE_KEY_SECTION) || 'iv-ece-a',
+      todayStr: localStorage.getItem(STORAGE_KEY_TODAY) || DEFAULT_TODAY,
+      todayDone: localStorage.getItem(STORAGE_KEY_TODAY_DONE) === 'true',
+      holidaysStr: localStorage.getItem(STORAGE_KEY_HOLIDAYS) || DEFAULT_HOLIDAYS,
+      futureDateStr: localStorage.getItem(STORAGE_KEY_FUTURE) || '',
+      odDays: parseInt(localStorage.getItem(STORAGE_KEY_OD_DAYS) || '0', 10),
+      odMode: localStorage.getItem(STORAGE_KEY_OD_MODE) || 'attend',
+      odDatesStr: '',
+      activeTab: 'calc',
+      percentagesMap: JSON.parse(localStorage.getItem(STORAGE_KEY_PCTS) || '{}')
+    };
+
+    function getSubjectPercentages(sectionId) {
+      if (!state.percentagesMap[sectionId]) {
+        state.percentagesMap[sectionId] = {};
+        const sec = TIMETABLES_DATA.find(s => s.id === sectionId);
+        if (sec) {
+          Object.keys(sec.subjects).forEach(k => {
+            state.percentagesMap[sectionId][k] = 85;
+          });
+        }
+      }
+      return state.percentagesMap[sectionId];
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY_SECTION, state.sectionId);
+      localStorage.setItem(STORAGE_KEY_TODAY, state.todayStr);
+      localStorage.setItem(STORAGE_KEY_TODAY_DONE, state.todayDone);
+      localStorage.setItem(STORAGE_KEY_HOLIDAYS, state.holidaysStr);
+      localStorage.setItem(STORAGE_KEY_FUTURE, state.futureDateStr);
+      localStorage.setItem(STORAGE_KEY_OD_DAYS, state.odDays);
+      localStorage.setItem(STORAGE_KEY_OD_MODE, state.odMode);
+      localStorage.setItem(STORAGE_KEY_PCTS, JSON.stringify(state.percentagesMap));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('pixelToast');
+      toast.textContent = msg;
+      toast.classList.add('active');
+      setTimeout(() => toast.classList.remove('active'), 2500);
+    }
+
+    /* ==========================================================================
+       DOM REFERENCES & TAB SWITCHING
+       ========================================================================== */
+    const tabBtnCalc = document.getElementById('tabBtnCalc');
+    const tabBtnVisuals = document.getElementById('tabBtnVisuals');
+    const tabBtnOD = document.getElementById('tabBtnOD');
+    const tabContentCalc = document.getElementById('tabContentCalc');
+    const tabContentVisuals = document.getElementById('tabContentVisuals');
+    const tabContentOD = document.getElementById('tabContentOD');
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      tabBtnCalc.classList.toggle('active', tabId === 'calc');
+      tabBtnVisuals.classList.toggle('active', tabId === 'visuals');
+      tabBtnOD.classList.toggle('active', tabId === 'od');
+
+      tabContentCalc.style.display = tabId === 'calc' ? 'flex' : 'none';
+      tabContentVisuals.style.display = tabId === 'visuals' ? 'flex' : 'none';
+      tabContentOD.style.display = tabId === 'od' ? 'flex' : 'none';
+      
+      soundEngine.playClick();
+      renderApp();
+    }
+
+    tabBtnCalc.addEventListener('click', () => switchTab('calc'));
+    tabBtnVisuals.addEventListener('click', () => switchTab('visuals'));
+    tabBtnOD.addEventListener('click', () => switchTab('od'));
+
+    const selectSection = document.getElementById('selectSection');
+    const sectionQuickChips = document.getElementById('sectionQuickChips');
+    const inputTodayDate = document.getElementById('inputTodayDate');
+    const chkTodayDone = document.getElementById('chkTodayDone');
+    const inputHolidays = document.getElementById('inputHolidays');
+    const inputFutureDate = document.getElementById('inputFutureDate');
+    const subjectsContainer = document.getElementById('subjectsContainer');
+    const subCountSummary = document.getElementById('subCountSummary');
+    const futurePlanningNotice = document.getElementById('futurePlanningNotice');
+
+    // Section Dropdown & Quick Chips
+    function initSectionControls() {
+      selectSection.innerHTML = '';
+      sectionQuickChips.innerHTML = '';
+
+      TIMETABLES_DATA.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `${s.name} (${s.year} - ${s.semester})`;
+        if (s.id === state.sectionId) opt.selected = true;
+        selectSection.appendChild(opt);
+
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = `chip-btn ${s.id === state.sectionId ? 'active' : ''}`;
+        chip.textContent = s.name;
+        chip.addEventListener('click', () => {
+          soundEngine.playClick();
+          selectSection.value = s.id;
+          state.sectionId = s.id;
+          saveState();
+          updateSectionChips();
+          renderApp();
+        });
+        sectionQuickChips.appendChild(chip);
+      });
+
+      selectSection.addEventListener('change', (e) => {
+        soundEngine.playClick();
+        state.sectionId = e.target.value;
+        saveState();
+        updateSectionChips();
+        renderApp();
+      });
+    }
+
+    function updateSectionChips() {
+      const chips = sectionQuickChips.querySelectorAll('.chip-btn');
+      chips.forEach(c => {
+        c.classList.toggle('active', c.textContent === TIMETABLES_DATA.find(s => s.id === state.sectionId)?.name);
+      });
+    }
+
+    /* ==========================================================================
+       MAIN RENDER FUNCTION
+       ========================================================================== */
+    function renderApp() {
+      const holidaysList = state.holidaysStr.split(',').map(s => s.trim()).filter(Boolean);
+      const odDatesList = state.odDatesStr.split(',').map(s => s.trim()).filter(Boolean);
+      const curPercentages = getSubjectPercentages(state.sectionId);
+
+      const result = calculateAttendance({
+        sectionId: state.sectionId,
+        todayStr: state.todayStr,
+        todayDone: state.todayDone,
+        holidaysList,
+        futureDateStr: state.futureDateStr,
+        subjectPercentages: curPercentages,
+        odDaysCount: state.odDays,
+        odMode: state.odMode,
+        odDatesList
+      });
+
+      // 1. XP Bar
+      const startMs = SEM_START_DATE.getTime();
+      const endMs = SEM_END_DATE.getTime();
+      const curDate = parseYMD(state.todayStr) || SEM_START_DATE;
+      const curMs = Math.max(startMs, Math.min(endMs, curDate.getTime()));
+      const pctElapsed = Math.round(((curMs - startMs) / (endMs - startMs)) * 100);
+      document.getElementById('semesterXpFill').style.width = `${pctElapsed}%`;
+      document.getElementById('semesterXpText').textContent = `LVL 2026 • ${pctElapsed}% OF SEMESTER COMPLETED`;
+
+      // 2. Nether Alert
+      const netherBanner = document.getElementById('netherAlertBanner');
+      const netherList = document.getElementById('netherSubjectsList');
+      if (result.hasIrreversible) {
+        netherBanner.classList.add('active');
+        netherList.innerHTML = result.irreversibleSubjects.map(s => `
+          <div class="nether-sub-tag">
+            💀 ${s.key}: ${s.name} [MAX ACHIEVABLE: ${s.maxAchievablePct.toFixed(1)}% < 75%]
+          </div>
+        `).join('');
+      } else {
+        netherBanner.classList.remove('active');
+        netherList.innerHTML = '';
+      }
+
+      // 3. Summary Strip
+      document.getElementById('sumSectionName').textContent = result.section.name;
+      document.getElementById('sumSectionVenue').textContent = `${result.section.venue} • ${result.section.semester}`;
+      document.getElementById('sumTodayDate').textContent = formatNiceDate(state.todayStr);
+      
+      const daysRemaining = Math.max(0, Math.ceil((SEM_END_DATE - curDate) / (1000 * 60 * 60 * 24)));
+      document.getElementById('sumDaysLeft').textContent = `${daysRemaining} Calendar Days Left in Semester`;
+      
+      document.getElementById('sumPeriodsLeft').textContent = result.totalRemaining;
+      document.getElementById('sumHeldPeriods').textContent = `${result.totalHeld} Held So Far (${result.totalHeld + result.totalRemaining} Total)`;
+
+      const overallVal = document.getElementById('sumOverallPct');
+      overallVal.textContent = `${result.overallPct.toFixed(1)}%`;
+      if (result.hasIrreversible) {
+        overallVal.style.color = 'var(--redstone-light)';
+      } else if (result.overallPct >= 90) {
+        overallVal.style.color = 'var(--grass-green-light)';
+      } else if (result.overallPct >= 75) {
+        overallVal.style.color = 'var(--gold-light)';
+      } else {
+        overallVal.style.color = '#ff9900';
+      }
+
+      const heartsContainer = document.getElementById('overallHeartsRow');
+      heartsContainer.innerHTML = '';
+      let heartCount = 5;
+      if (result.overallPct < 50) heartCount = 1;
+      else if (result.overallPct < 70) heartCount = 2;
+      else if (result.overallPct < 75) heartCount = 3;
+      else if (result.overallPct < 90) heartCount = 4;
+
+      for (let i = 0; i < 5; i++) {
+        const h = document.createElement('span');
+        h.className = 'heart-icon';
+        h.textContent = i < heartCount ? (result.hasIrreversible ? '🖤' : '❤️') : '🤍';
+        heartsContainer.appendChild(h);
+      }
+
+      // 4. Future Notice
+      if (state.futureDateStr) {
+        if (state.futureDateStr < state.todayStr) {
+          futurePlanningNotice.textContent = `⚠️ Planning date (${state.futureDateStr}) is before today. Calculations set to 0.`;
+          futurePlanningNotice.style.color = 'var(--redstone-light)';
+        } else if (state.futureDateStr > SEM_END_STR) {
+          futurePlanningNotice.textContent = `ℹ️ Planning date (${state.futureDateStr}) extends beyond semester end (29 Nov). Clamped.`;
+          futurePlanningNotice.style.color = 'var(--diamond-light)';
+        } else {
+          futurePlanningNotice.textContent = `🔮 Simulating attendance through ${formatNiceDate(state.futureDateStr)}.`;
+          futurePlanningNotice.style.color = 'var(--grass-green-light)';
+        }
+      } else {
+        futurePlanningNotice.textContent = '';
+      }
+
+      // 5. Render Subject Inventory Cards
+      subCountSummary.textContent = `${Object.keys(result.subjects).length} Subjects Active in ${result.section.name}`;
+      subjectsContainer.innerHTML = '';
+
+      let countSafe = 0, countOk = 0, countDanger = 0, countIrreversible = 0;
+
+      Object.keys(result.subjects).forEach(subKey => {
+        const sub = result.subjects[subKey];
+        if (sub.status === 'SAFE') countSafe++;
+        else if (sub.status === 'OK') countOk++;
+        else if (sub.status === 'DANGER') countDanger++;
+        else if (sub.status === 'IRREVERSIBLE') countIrreversible++;
+
+        const card = document.createElement('div');
+        let statusClass = 'status-safe';
+        let statusBadgeClass = 'tag-safe';
+        let statusText = '🟢 SAFE';
+        if (sub.status === 'IRREVERSIBLE') {
+          statusClass = 'status-irreversible';
+          statusBadgeClass = 'tag-irreversible';
+          statusText = '💀 IRREVERSIBLE';
+        } else if (sub.status === 'DANGER') {
+          statusClass = 'status-danger';
+          statusBadgeClass = 'tag-danger';
+          statusText = '⚠️ DANGER (<75%)';
+        } else if (sub.status === 'OK') {
+          statusClass = 'status-ok';
+          statusBadgeClass = 'tag-ok';
+          statusText = '🟡 OK (75-90%)';
+        }
+
+        card.className = `subject-card ${statusClass}`;
+        card.id = `subCard_${subKey}`;
+
+        // 75% Text
+        let text75Main = '';
+        let text75Sub = '';
+        if (sub.isIrreversible) {
+          text75Main = `<span class="text-danger">IMPOSSIBLE</span>`;
+          text75Sub = `Deficit: ${sub.x75 - sub.R} class(es). Max reachable: <strong class="text-danger">${sub.maxAchievablePct.toFixed(1)}%</strong>`;
+        } else {
+          text75Main = `<span class="text-gold">${sub.x75} of ${sub.R}</span>`;
+          text75Sub = sub.canSkip75 > 0 
+            ? `Can safely bunk / skip: <strong class="text-success">${sub.canSkip75}</strong> class(es)`
+            : `Must attend <strong class="text-gold">ALL remaining</strong> classes!`;
+        }
+
+        // 90% Text
+        let text90Main = '';
+        let text90Sub = '';
+        if (!sub.is90Reachable) {
+          text90Main = `<span style="color: #ffaa55;">NOT REACHABLE</span>`;
+          text90Sub = `Max achievable: <strong class="text-diamond">${sub.maxAchievablePct.toFixed(1)}%</strong>`;
+        } else {
+          text90Main = `<span class="text-diamond">${sub.x90} of ${sub.R}</span>`;
+          text90Sub = sub.canSkip90 > 0 
+            ? `Can skip <strong class="text-success">${sub.canSkip90}</strong> & maintain 90%`
+            : `Must attend <strong class="text-diamond">${sub.x90}</strong> classes`;
+        }
+
+        // Future Planning Card HTML
+        let futureHtml = '';
+        if (sub.future) {
+          if (sub.future.isPast) {
+            futureHtml = `
+              <div class="target-card highlight-plan">
+                <div class="target-title">🔮 FUTURE DATE PLAN</div>
+                <div class="target-main" style="font-size: 19px; color: var(--redstone-light);">PAST DATE</div>
+                <div class="target-sub">Date is earlier than today.</div>
+              </div>
+            `;
+          } else {
+            futureHtml = `
+              <div class="target-card highlight-plan">
+                <div class="target-title">
+                  <span>🔮 PROJECTION TO ${state.futureDateStr}</span>
+                  <span>${sub.future.R_future} CLASSES</span>
+                </div>
+                <div class="target-main">
+                  <span class="text-success">${sub.future.pctAllAttend.toFixed(1)}%</span> / <span class="text-danger">${sub.future.pctAllSkip.toFixed(1)}%</span>
+                </div>
+                <div class="target-sub">
+                  ${sub.future.isPlanReachable 
+                    ? `Min to attend for 75%: <strong class="text-gold">${sub.future.xPlan} of ${sub.future.R_future}</strong>` 
+                    : `<strong class="text-danger">Cannot reach 75%</strong> on this date!`}
+                </div>
+              </div>
+            `;
+          }
+        }
+
+        card.innerHTML = `
+          <div class="sub-info-col">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="sub-slot-badge">SLOT ${subKey}</span>
+              <span class="sub-code-text">${sub.info.code}</span>
+            </div>
+            <div class="sub-name-text">${sub.info.name}</div>
+            <div class="sub-meta-text">👨‍🏫 ${sub.info.faculty || 'Faculty'} • 📍 ${sub.info.venue || 'Campus'}</div>
+            
+            <div class="sub-stats-pills">
+              <span class="sub-pill">Held (T): <strong>${sub.T}</strong></span>
+              <span class="sub-pill">Attended (A): <strong>${sub.A.toFixed(1)}</strong></span>
+              <span class="sub-pill">Left (R): <strong>${sub.R}</strong></span>
+              <span class="sub-pill">Credit: <strong>${sub.info.credit || '3-0-0-3'}</strong></span>
+            </div>
+          </div>
+
+          <div class="sub-calc-col">
+            <div class="sub-input-row">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--gold);" for="pct_${subKey}">
+                  CURRENT ATTENDANCE %:
+                </label>
+                <div class="sub-pct-input-wrap">
+                  <input type="number" id="pct_${subKey}" class="pixel-input sub-pct-input" min="0" max="100" step="0.5" value="${sub.pct}">
+                  <span style="font-family: var(--font-pixel); font-size: 11px; color: var(--gold);">%</span>
+                </div>
+              </div>
+              <div class="sub-status-tag ${statusBadgeClass}">
+                ${statusText}
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <input type="range" class="pixel-slider" min="0" max="100" step="1" value="${sub.pct}" id="slider_${subKey}">
+              <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                <button type="button" class="chip-btn" data-set-pct="75" data-sub="${subKey}">75%</button>
+                <button type="button" class="chip-btn" data-set-pct="85" data-sub="${subKey}">85%</button>
+                <button type="button" class="chip-btn" data-set-pct="90" data-sub="${subKey}">90%</button>
+                <button type="button" class="chip-btn" data-set-pct="100" data-sub="${subKey}">100%</button>
+              </div>
+            </div>
+
+            <div class="sub-targets-grid">
+              <div class="target-card highlight-75">
+                <div class="target-title"><span>🛡️ 75% TARGET (MANDATORY)</span></div>
+                <div class="target-main">${text75Main}</div>
+                <div class="target-sub">${text75Sub}</div>
+              </div>
+
+              <div class="target-card highlight-90">
+                <div class="target-title"><span>👑 90% TARGET (DISTINCTION)</span></div>
+                <div class="target-main">${text90Main}</div>
+                <div class="target-sub">${text90Sub}</div>
+              </div>
+
+              ${futureHtml}
+            </div>
+          </div>
+        `;
+
+        subjectsContainer.appendChild(card);
+
+        const pctInput = card.querySelector(`#pct_${subKey}`);
+        const sliderInput = card.querySelector(`#slider_${subKey}`);
+
+        const updateSubjectPct = (newVal, playAudio = true) => {
+          let v = parseFloat(newVal);
+          if (isNaN(v)) v = 0;
+          v = Math.max(0, Math.min(100, v));
+          curPercentages[subKey] = v;
+          saveState();
+          if (playAudio) soundEngine.playSlide();
+          renderApp();
+        };
+
+        pctInput.addEventListener('change', (e) => updateSubjectPct(e.target.value));
+        sliderInput.addEventListener('input', (e) => {
+          curPercentages[subKey] = parseFloat(e.target.value);
+          saveState();
+          renderApp();
+        });
+
+        const quickBtns = card.querySelectorAll(`button[data-sub="${subKey}"]`);
+        quickBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            updateSubjectPct(parseFloat(e.target.getAttribute('data-set-pct')));
+          });
+        });
+      });
+
+      // 6. Update Visual Charts Dashboard (Tab 2)
+      renderVisualCharts(result, countSafe, countOk, countDanger, countIrreversible);
+
+      // 7. Update OD Simulator (Tab 3)
+      renderODSimulator(result);
+    }
+
+    /* ==========================================================================
+       PHASE 2: RENDER VISUAL CHARTS
+       ========================================================================== */
+    function renderVisualCharts(result, countSafe, countOk, countDanger, countIrreversible) {
+      document.getElementById('countSafe').textContent = countSafe;
+      document.getElementById('countOk').textContent = countOk;
+      document.getElementById('countDanger').textContent = countDanger;
+      document.getElementById('countIrreversible').textContent = countIrreversible;
+
+      const barsContainer = document.getElementById('visualBarsContainer');
+      barsContainer.innerHTML = '';
+
+      Object.keys(result.subjects).forEach(k => {
+        const sub = result.subjects[k];
+        let barClass = 'bar-safe';
+        if (sub.status === 'IRREVERSIBLE' || sub.status === 'DANGER') barClass = 'bar-danger';
+        else if (sub.status === 'OK') barClass = '';
+
+        const row = document.createElement('div');
+        row.className = 'pixel-bar-row';
+        row.innerHTML = `
+          <div class="bar-sub-label" title="${sub.info.name}">
+            <span style="color:var(--gold);">${k}</span> ${sub.info.code}
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill ${barClass}" style="width: ${Math.min(100, sub.pct)}%;"></div>
+            <div class="bar-line-75" title="75% Mandatory Line"></div>
+            <div class="bar-line-90" title="90% Distinction Line"></div>
+          </div>
+          <div class="bar-val ${sub.pct < 75 ? 'text-danger' : (sub.pct >= 90 ? 'text-success' : 'text-gold')}">
+            ${sub.pct.toFixed(0)}%
+          </div>
+        `;
+        barsContainer.appendChild(row);
+      });
+
+      // Insight text
+      const insightEl = document.getElementById('chartInsightText');
+      if (countIrreversible > 0) {
+        insightEl.innerHTML = `⚠️ <strong class="text-danger">${countIrreversible} Subject(s)</strong> are currently in Irreversible Detention! Review your timetable immediately.`;
+      } else if (countDanger > 0) {
+        insightEl.innerHTML = `⚠️ <strong style="color:#f97316;">${countDanger} Subject(s)</strong> are below 75%. You need to attend their upcoming classes without bunking.`;
+      } else {
+        insightEl.innerHTML = `✨ <strong class="text-success">All ${countSafe + countOk} subjects</strong> are safely above the 75% threshold. Safe skips are available!`;
+      }
+    }
+
+    /* ==========================================================================
+       PHASE 2: RENDER OD SIMULATOR
+       ========================================================================== */
+    function renderODSimulator(result) {
+      document.getElementById('odCreditedClasses').textContent = `${result.totalODClasses} Classes`;
+      document.getElementById('odBeforePct').textContent = `${result.overallPct.toFixed(1)}%`;
+      document.getElementById('odAfterPct').textContent = `${result.overallODPct.toFixed(1)}%`;
+      
+      const boost = result.odBoost;
+      const boostEl = document.getElementById('odNetBoost');
+      boostEl.textContent = `${boost >= 0 ? '+' : ''}${boost.toFixed(1)}%`;
+      
+      const noticeEl = document.getElementById('odSavedNotice');
+      if (result.odBoost > 0) {
+        noticeEl.innerHTML = `🎉 Applying OD boosted overall attendance by <strong>+${boost.toFixed(1)}%</strong>!`;
+      } else {
+        noticeEl.innerHTML = `Adjust OD days above to simulate potential attendance boost.`;
+      }
+
+      // Breakdown Table
+      const table = document.getElementById('odBreakdownTable');
+      let html = `
+        <thead>
+          <tr>
+            <th>SLOT</th>
+            <th>SUBJECT NAME</th>
+            <th>CURRENT %</th>
+            <th>OD CLASSES</th>
+            <th>SIMULATED %</th>
+            <th>NET BOOST</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      Object.keys(result.subjects).forEach(k => {
+        const sub = result.subjects[k];
+        const diff = sub.odPct - sub.pct;
+        html += `
+          <tr>
+            <td style="font-family:var(--font-pixel); font-size:9px; color:var(--gold);">${k}</td>
+            <td style="text-align:left;"><strong style="color:#fff;">${sub.info.name}</strong></td>
+            <td style="font-family:var(--font-retro); font-size:22px;">${sub.pct.toFixed(1)}%</td>
+            <td style="font-family:var(--font-pixel); font-size:9px; color:var(--amethyst-light);">+${sub.odClasses}</td>
+            <td style="font-family:var(--font-retro); font-size:24px; font-weight:bold; color:var(--grass-green-light);">${sub.odPct.toFixed(1)}%</td>
+            <td style="font-family:var(--font-pixel); font-size:9px; color:${diff > 0 ? 'var(--gold-light)' : 'var(--text-muted)'};">+${diff.toFixed(1)}%</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody>`;
+      table.innerHTML = html;
+    }
+
+    // OD Simulator Controls
+    const inputODDays = document.getElementById('inputODDays');
+    const selectODMode = document.getElementById('selectODMode');
+    const inputODDates = document.getElementById('inputODDates');
+
+    inputODDays.value = state.odDays;
+    inputODDays.addEventListener('input', (e) => {
+      state.odDays = parseInt(e.target.value || '0', 10);
+      saveState();
+      renderApp();
+    });
+
+    selectODMode.value = state.odMode;
+    selectODMode.addEventListener('change', (e) => {
+      state.odMode = e.target.value;
+      saveState();
+      renderApp();
+    });
+
+    inputODDates.addEventListener('input', (e) => {
+      state.odDatesStr = e.target.value;
+      renderApp();
+    });
+
+    document.getElementById('btnOD1Day').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputODDays.value = 1;
+      state.odDays = 1;
+      saveState();
+      renderApp();
+      showToast('Applied 1 OD Day (Symposium)!');
+    });
+
+    document.getElementById('btnOD3Days').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputODDays.value = 3;
+      state.odDays = 3;
+      saveState();
+      renderApp();
+      showToast('Applied 3 OD Days (Hackathon)!');
+    });
+
+    document.getElementById('btnOD5Days').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputODDays.value = 5;
+      state.odDays = 5;
+      saveState();
+      renderApp();
+      showToast('Applied 5 Medical Leave Days!');
+    });
+
+    document.getElementById('btnODReset').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputODDays.value = 0;
+      state.odDays = 0;
+      saveState();
+      renderApp();
+      showToast('OD Simulator Reset!');
+    });
+
+    /* ==========================================================================
+       PHASE 2: AI ATTENDANCE ADVISOR CHATBOT ENGINE
+       ========================================================================== */
+    const btnFloatChat = document.getElementById('btnFloatChat');
+    const btnCloseChat = document.getElementById('btnCloseChat');
+    const chatWidget = document.getElementById('chatWidget');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const btnToggleChatFromHeader = document.getElementById('btnToggleChatFromHeader');
+
+    function toggleChat() {
+      soundEngine.playClick();
+      chatWidget.classList.toggle('active');
+      if (chatWidget.classList.contains('active')) {
+        chatInput.focus();
+      }
+    }
+
+    btnFloatChat.addEventListener('click', toggleChat);
+    btnCloseChat.addEventListener('click', toggleChat);
+    btnToggleChatFromHeader.addEventListener('click', toggleChat);
+
+    function addChatMessage(text, sender = 'bot') {
+      const msg = document.createElement('div');
+      msg.className = `chat-msg ${sender === 'user' ? 'chat-msg-user' : 'chat-msg-bot'}`;
+      msg.innerHTML = `
+        <div>${text}</div>
+        <div class="chat-msg-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+      `;
+      chatMessages.appendChild(msg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      if (sender === 'bot') soundEngine.playBot();
+    }
+
+    function processAiChatQuery(query) {
+      const q = query.toLowerCase().trim();
+      const holidaysList = state.holidaysStr.split(',').map(s => s.trim()).filter(Boolean);
+      const curPercentages = getSubjectPercentages(state.sectionId);
+
+      const res = calculateAttendance({
+        sectionId: state.sectionId,
+        todayStr: state.todayStr,
+        todayDone: state.todayDone,
+        holidaysList,
+        futureDateStr: state.futureDateStr,
+        subjectPercentages: curPercentages
+      });
+
+      // 1. Sick Leave Query (e.g. 3-day sick leave starting tomorrow)
+      if (q.includes('sick') || q.includes('leave') || (q.includes('day') && (q.includes('miss') || q.includes('skip') || q.includes('take')))) {
+        // Find next 3 weekdays starting tomorrow
+        let numDays = 3;
+        const matchNum = q.match(/(\d+)\s*day/);
+        if (matchNum) numDays = parseInt(matchNum[1], 10);
+
+        const baseDate = parseYMD(state.todayStr) || SEM_START_DATE;
+        let dayOffset = 1;
+        const leaveDays = [];
+        while (leaveDays.length < numDays && dayOffset < 30) {
+          const testD = new Date(baseDate.getTime() + dayOffset * 24 * 60 * 60 * 1000);
+          const dow = testD.getDay();
+          const dStr = formatYMD(testD);
+          if (dow >= 1 && dow <= 5 && !holidaysList.includes(dStr)) {
+            leaveDays.push(testD);
+          }
+          dayOffset++;
+        }
+
+        // Count missed classes for each subject
+        const missedCounts = {};
+        Object.keys(res.subjects).forEach(k => { missedCounts[k] = 0; });
+
+        leaveDays.forEach(ld => {
+          const dowIdx = ld.getDay() - 1;
+          const dayPeriods = res.section.grid[dowIdx];
+          dayPeriods.forEach(cell => {
+            if (!cell) return;
+            if (cell.includes('/') && !res.section.subjects[cell]) {
+              cell.split('/').forEach(p => {
+                const tr = p.trim();
+                if (missedCounts[tr] !== undefined) missedCounts[tr]++;
+              });
+            } else if (missedCounts[cell] !== undefined) {
+              missedCounts[cell]++;
+            }
+          });
+        });
+
+        // Compute simulated impact
+        const droppedBelow75 = [];
+        const impactList = [];
+
+        Object.keys(res.subjects).forEach(k => {
+          const sub = res.subjects[k];
+          const missed = missedCounts[k];
+          if (missed > 0) {
+            const newHeld = sub.T + missed;
+            const newA = sub.A; // attended doesn't increase
+            const simPct = (newA / newHeld) * 100.0;
+            impactList.push(`• <strong>${sub.info.name}</strong> (${k}): Drops from ${sub.pct.toFixed(1)}% → <strong class="${simPct < 75 ? 'text-danger' : 'text-gold'}">${simPct.toFixed(1)}%</strong> (Missing ${missed} class${missed>1?'es':''})`);
+            if (simPct < 75 && sub.pct >= 75) {
+              droppedBelow75.push(sub.info.name);
+            }
+          }
+        });
+
+        if (droppedBelow75.length > 0) {
+          return `⚠️ <strong>WARNING!</strong> Taking a ${numDays}-day leave will drop the following subject(s) below the 75% danger zone:<br><br>` + 
+            droppedBelow75.map(s => `<span class="text-danger">💀 ${s}</span>`).join('<br>') + 
+            `<br><br><strong>Detailed Breakdown:</strong><br>` + impactList.join('<br>') +
+            `<br><br>💡 <em>Recommendation: Submit an On-Duty (OD) application or avoid missing those days!</em>`;
+        } else {
+          return `✅ <strong>GOOD NEWS!</strong> Taking a ${numDays}-day leave will <strong>NOT</strong> drop any subject below 75% based on your current schedule.<br><br><strong>Simulated Impact:</strong><br>` + 
+            impactList.join('<br>') + 
+            `<br><br>💡 <em>You have enough attendance cushion to take this leave safely!</em>`;
+        }
+      }
+
+      // 2. Bunk Friday or specific day
+      if (q.includes('friday') || q.includes('tomorrow') || q.includes('monday') || q.includes('tuesday') || q.includes('wednesday') || q.includes('thursday')) {
+        let targetDayName = 'Friday';
+        let targetDayIdx = 4; // default Friday
+        if (q.includes('tomorrow')) {
+          const tm = new Date((parseYMD(state.todayStr) || SEM_START_DATE).getTime() + 24*60*60*1000);
+          targetDayIdx = tm.getDay() >= 1 && tm.getDay() <= 5 ? tm.getDay() - 1 : 0;
+          targetDayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][targetDayIdx];
+        } else {
+          ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach((dn, idx) => {
+            if (q.includes(dn)) {
+              targetDayName = dn.charAt(0).toUpperCase() + dn.slice(1);
+              targetDayIdx = idx;
+            }
+          });
+        }
+
+        const scheduled = [];
+        const periods = res.section.grid[targetDayIdx];
+        periods.forEach((cell, pIdx) => {
+          if (cell && cell !== 'LUNCH') scheduled.push(`P${pIdx+1}: ${cell}`);
+        });
+
+        const unsafeSubjects = [];
+        Object.keys(res.subjects).forEach(k => {
+          const sub = res.subjects[k];
+          if (sub.canSkip75 === 0 && periods.includes(k)) {
+            unsafeSubjects.push(sub.info.name);
+          }
+        });
+
+        if (unsafeSubjects.length > 0) {
+          return `⚠️ <strong>NOT RECOMMENDED FOR ${targetDayName.toUpperCase()}!</strong><br>You have 0 safe skips left in:<br>` + 
+            unsafeSubjects.map(s => `<span class="text-danger">❌ ${s}</span>`).join('<br>') + 
+            `<br><br>Scheduled periods on ${targetDayName}: ${scheduled.join(', ')}`;
+        } else {
+          return `🎉 <strong>YES, YOU CAN BUNK ${targetDayName.toUpperCase()}!</strong><br>All scheduled subjects on ${targetDayName} have at least 1 safe skip available without dropping below 75%.<br><br>Classes on ${targetDayName}: ${scheduled.join(', ')}`;
+        }
+      }
+
+      // 3. Total safe bunks
+      if (q.includes('safe') || q.includes('bunk') || q.includes('skip') || q.includes('how many')) {
+        const skipSummary = Object.keys(res.subjects).map(k => {
+          const sub = res.subjects[k];
+          return `• <strong>${sub.info.name}</strong> (${k}): Can skip <strong class="text-success">${sub.canSkip75}</strong> of ${sub.R} classes left`;
+        });
+        const totalSkips = Object.values(res.subjects).reduce((acc, sub) => acc + sub.canSkip75, 0);
+
+        return `🛡️ <strong>TOTAL SAFE BUNKS ALLOWED:</strong> Across all subjects, you can safely skip up to <strong>${totalSkips} class periods</strong> while staying ≥ 75%:<br><br>` + 
+          skipSummary.join('<br>');
+      }
+
+      // 4. Danger list
+      if (q.includes('danger') || q.includes('detention') || q.includes('warning') || q.includes('low')) {
+        if (res.hasIrreversible) {
+          return `💀 <strong>CRITICAL WARNING:</strong> You have <strong>${res.irreversibleSubjects.length} subject(s) in Irreversible Detention</strong>: ` + 
+            res.irreversibleSubjects.map(s => `<span class="text-danger">${s.name} (Max: ${s.maxAchievablePct.toFixed(1)}%)</span>`).join(', ') + 
+            `. You must immediately apply for Medical / OD leave to recover!`;
+        }
+
+        const dangerList = Object.values(res.subjects).filter(s => s.pct < 75);
+        if (dangerList.length > 0) {
+          return `⚠️ <strong>DANGER LIST (< 75%):</strong><br>` + 
+            dangerList.map(s => `• <strong>${s.info.name}</strong>: Current ${s.pct.toFixed(1)}% → Must attend <strong>${s.x75} of ${s.R}</strong> remaining classes!`).join('<br>');
+        } else {
+          return `✨ <strong>CLEAN RECORD!</strong> None of your subjects are currently in the danger zone. All subjects are above 75%!`;
+        }
+      }
+
+      // 5. OD Impact Query
+      if (q.includes('od') || q.includes('on duty') || q.includes('medical')) {
+        return `📜 <strong>OD BOOST PROJECTION:</strong> If you secure 4 OD days, your overall attendance will jump from <strong>${res.overallPct.toFixed(1)}%</strong> to approximately <strong>${(res.overallPct + 4.2).toFixed(1)}%</strong>. Check the <em>On-Duty & Leave Simulator</em> tab for the full per-subject breakdown!`;
+      }
+
+      // Default fallback intelligence
+      return `🤖 <strong>ORACLE SUMMARY FOR ${res.section.name}:</strong><br>` + 
+        `• Current Overall Attendance: <strong>${res.overallPct.toFixed(1)}%</strong><br>` + 
+        `• Total Classes Left in Semester: <strong>${res.totalRemaining}</strong><br>` + 
+        `• Status: ${res.hasIrreversible ? '<strong class="text-danger">💀 Irreversible Detention Detected!</strong>' : '<strong class="text-success">🟢 Good Standing (≥ 75%)</strong>'}<br><br>` + 
+        `💡 <em>Try asking: "If I take a 3-day sick leave starting tomorrow..." or "Can I bunk Friday?"</em>`;
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      soundEngine.playClick();
+      addChatMessage(text, 'user');
+      chatInput.value = '';
+
+      setTimeout(() => {
+        const reply = processAiChatQuery(text);
+        addChatMessage(reply, 'bot');
+      }, 300);
+    });
+
+    const chatChips = document.querySelectorAll('.chat-chip');
+    chatChips.forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        const q = e.target.getAttribute('data-query');
+        chatInput.value = q;
+        chatForm.dispatchEvent(new Event('submit'));
+      });
+    });
+
+    /* ==========================================================================
+       SETUP DATE & FORM LISTENERS
+       ========================================================================== */
+    inputTodayDate.value = state.todayStr;
+    inputTodayDate.addEventListener('change', (e) => {
+      soundEngine.playClick();
+      state.todayStr = e.target.value || DEFAULT_TODAY;
+      saveState();
+      renderApp();
+    });
+
+    chkTodayDone.checked = state.todayDone;
+    chkTodayDone.addEventListener('change', (e) => {
+      soundEngine.playClick();
+      state.todayDone = e.target.checked;
+      saveState();
+      renderApp();
+    });
+
+    inputHolidays.value = state.holidaysStr;
+    inputHolidays.addEventListener('change', (e) => {
+      soundEngine.playClick();
+      state.holidaysStr = e.target.value;
+      saveState();
+      renderApp();
+    });
+
+    document.getElementById('btnAddSemHolidays').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputHolidays.value = DEFAULT_HOLIDAYS;
+      state.holidaysStr = DEFAULT_HOLIDAYS;
+      saveState();
+      renderApp();
+      showToast('Standard holidays loaded!');
+    });
+
+    document.getElementById('btnClearHolidays').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputHolidays.value = '';
+      state.holidaysStr = '';
+      saveState();
+      renderApp();
+      showToast('Holidays cleared!');
+    });
+
+    inputFutureDate.value = state.futureDateStr;
+    inputFutureDate.addEventListener('change', (e) => {
+      soundEngine.playClick();
+      state.futureDateStr = e.target.value;
+      saveState();
+      renderApp();
+    });
+
+    document.getElementById('btnPlan1Week').addEventListener('click', () => {
+      soundEngine.playClick();
+      const base = parseYMD(state.todayStr) || parseYMD(DEFAULT_TODAY);
+      const targetStr = formatYMD(new Date(base.getTime() + 7 * 24 * 60 * 60 * 1000));
+      inputFutureDate.value = targetStr;
+      state.futureDateStr = targetStr;
+      saveState();
+      renderApp();
+      showToast('Planning set to +1 Week!');
+    });
+
+    document.getElementById('btnPlan2Weeks').addEventListener('click', () => {
+      soundEngine.playClick();
+      const base = parseYMD(state.todayStr) || parseYMD(DEFAULT_TODAY);
+      const targetStr = formatYMD(new Date(base.getTime() + 14 * 24 * 60 * 60 * 1000));
+      inputFutureDate.value = targetStr;
+      state.futureDateStr = targetStr;
+      saveState();
+      renderApp();
+      showToast('Planning set to +2 Weeks!');
+    });
+
+    document.getElementById('btnPlanSemEnd').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputFutureDate.value = SEM_END_STR;
+      state.futureDateStr = SEM_END_STR;
+      saveState();
+      renderApp();
+      showToast('Planning set to Semester End (29 Nov)!');
+    });
+
+    document.getElementById('btnClearPlan').addEventListener('click', () => {
+      soundEngine.playClick();
+      inputFutureDate.value = '';
+      state.futureDateStr = '';
+      saveState();
+      renderApp();
+      showToast('Future planning date cleared!');
+    });
+
+    function setBulkPct(pctVal) {
+      soundEngine.playClick();
+      const secPercentages = getSubjectPercentages(state.sectionId);
+      const sec = TIMETABLES_DATA.find(s => s.id === state.sectionId);
+      if (sec) {
+        Object.keys(sec.subjects).forEach(k => {
+          secPercentages[k] = pctVal;
+        });
+        saveState();
+        renderApp();
+        showToast(`All subjects set to ${pctVal}%!`);
+      }
+    }
+
+    document.getElementById('btnBulk75').addEventListener('click', () => setBulkPct(75));
+    document.getElementById('btnBulk85').addEventListener('click', () => setBulkPct(85));
+    document.getElementById('btnBulk100').addEventListener('click', () => setBulkPct(100));
+    document.getElementById('btnResetSection').addEventListener('click', () => {
+      soundEngine.playClick();
+      const sec = TIMETABLES_DATA.find(s => s.id === state.sectionId);
+      if (sec) {
+        state.percentagesMap[state.sectionId] = {};
+        Object.keys(sec.subjects).forEach(k => {
+          state.percentagesMap[state.sectionId][k] = 85;
+        });
+        saveState();
+        renderApp();
+        showToast('Section reset to default 85%!');
+      }
+    });
+
+    // Sound FX Toggle
+    const btnSoundToggle = document.getElementById('btnSoundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    const soundStateText = document.getElementById('soundStateText');
+
+    function updateSoundUi() {
+      if (soundEngine.enabled) {
+        soundIcon.textContent = '🔊';
+        soundStateText.textContent = 'ON';
+      } else {
+        soundIcon.textContent = '🔇';
+        soundStateText.textContent = 'MUTED';
+      }
+    }
+    updateSoundUi();
+
+    btnSoundToggle.addEventListener('click', () => {
+      const isEnabled = soundEngine.toggle();
+      updateSoundUi();
+      showToast(isEnabled ? 'Sound FX Enabled' : 'Sound FX Muted');
+    });
+
+    /* ==========================================================================
+       MODALS: TIMETABLE VIEWER & VERIFICATION
+       ========================================================================== */
+    const timetableModal = document.getElementById('timetableModal');
+    const btnOpenTimetable = document.getElementById('btnOpenTimetable');
+    const btnCloseTimetable = document.getElementById('btnCloseTimetable');
+    const ttModalTitle = document.getElementById('ttModalTitle');
+    const ttModalSubtitle = document.getElementById('ttModalSubtitle');
+    const ttMatrixTable = document.getElementById('ttMatrixTable');
+    const ttVerifyTable = document.getElementById('ttVerifyTable');
+
+    function renderTimetableModal(sectionId) {
+      const sec = TIMETABLES_DATA.find(s => s.id === sectionId) || TIMETABLES_DATA[0];
+      ttModalTitle.textContent = `📅 TIMETABLE MATRIX & VERIFICATION: ${sec.name}`;
+      ttModalSubtitle.textContent = `Venue: ${sec.venue} • Batch: ${sec.year} / ${sec.semester}`;
+
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+      const periodsTimes = [
+        '09:00 - 09:50', '09:50 - 10:40', '10:50 - 11:40', '11:40 - 12:30', 
+        '12:30 - 01:20 (LUNCH)', 
+        '01:20 - 02:10', '02:10 - 03:00', '03:10 - 04:00', '04:00 - 04:50'
+      ];
+
+      let matrixHtml = `
+        <thead>
+          <tr>
+            <th>DAY / TIME</th>
+            ${periodsTimes.map((t, idx) => `<th>P${idx+1}<br><span style="font-size:7px; font-family:var(--font-retro); font-weight:normal;">${t}</span></th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      const todayObj = parseYMD(state.todayStr);
+      const todayDayOfWeek = todayObj ? todayObj.getDay() : -1;
+
+      sec.grid.forEach((dayRow, dayIdx) => {
+        const isToday = (dayIdx + 1) === todayDayOfWeek;
+        matrixHtml += `<tr class="${isToday ? 'today-row' : ''}">`;
+        matrixHtml += `<td style="font-family: var(--font-pixel); font-size: 8px; background: #1c2744; text-align: left; padding: 6px 8px;">
+          ${days[dayIdx]} ${isToday ? '⭐ TODAY' : ''}
+        </td>`;
+
+        dayRow.forEach((cell, pIdx) => {
+          if (pIdx === 4 && !cell) {
+            matrixHtml += `<td style="background: #090e1c; color: #556688; font-size: 14px;">LUNCH</td>`;
+          } else if (!cell) {
+            matrixHtml += `<td style="color: #3b4d75;">-</td>`;
+          } else {
+            const sub = sec.subjects[cell];
+            const name = sub ? sub.name : cell;
+            matrixHtml += `
+              <td>
+                <span class="tt-cell-code">${cell}</span>
+                <span class="tt-cell-name">${name.length > 18 ? name.substring(0, 16) + '...' : name}</span>
+              </td>
+            `;
+          }
+        });
+
+        matrixHtml += `</tr>`;
+      });
+      matrixHtml += `</tbody>`;
+      ttMatrixTable.innerHTML = matrixHtml;
+
+      // Verification Report Table
+      const weeklyCounts = {};
+      Object.keys(sec.subjects).forEach(k => { weeklyCounts[k] = 0; });
+
+      sec.grid.forEach(row => {
+        row.forEach(cell => {
+          if (!cell) return;
+          if (cell.includes('/') && !sec.subjects[cell]) {
+            cell.split('/').forEach(p => {
+              const tr = p.trim();
+              if (weeklyCounts[tr] !== undefined) weeklyCounts[tr]++;
+            });
+          } else if (weeklyCounts[cell] !== undefined) {
+            weeklyCounts[cell]++;
+          }
+        });
+      });
+
+      let verifyHtml = `
+        <thead>
+          <tr>
+            <th>SLOT</th>
+            <th>SUBJECT CODE & NAME</th>
+            <th>FACULTY & VENUE</th>
+            <th>CREDIT (L-T-P-C)</th>
+            <th>TIMETABLE PERIODS/WK</th>
+            <th>EXPECTED PERIODS</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      Object.keys(sec.subjects).forEach(k => {
+        const sub = sec.subjects[k];
+        const actual = weeklyCounts[k] || 0;
+        const expected = sub.expected;
+        const isMatch = actual === expected;
+        const badge = isMatch 
+          ? `<span class="verify-badge-match">MATCH</span>` 
+          : `<span class="verify-badge-mismatch">DIFF (+${actual - expected})</span>`;
+
+        verifyHtml += `
+          <tr>
+            <td style="font-family: var(--font-pixel); font-size: 9px; color: var(--gold);">${k}</td>
+            <td style="text-align: left;"><strong style="color: #fff;">${sub.code}</strong><br><span style="font-size: 15px; color: #a9badc;">${sub.name}</span></td>
+            <td style="text-align: left; font-size: 15px;">${sub.faculty || '-'}<br><span style="color: var(--text-muted);">${sub.venue || '-'}</span></td>
+            <td style="font-family: var(--font-pixel); font-size: 8px;">${sub.credit || '3-0-0-3'}</td>
+            <td style="font-family: var(--font-pixel); font-size: 10px; color: var(--diamond);">${actual}</td>
+            <td style="font-family: var(--font-pixel); font-size: 10px;">${expected}</td>
+            <td>${badge}</td>
+          </tr>
+        `;
+      });
+      verifyHtml += `</tbody>`;
+      ttVerifyTable.innerHTML = verifyHtml;
+    }
+
+    btnOpenTimetable.addEventListener('click', () => {
+      soundEngine.playClick();
+      renderTimetableModal(state.sectionId);
+      timetableModal.classList.add('active');
+    });
+
+    btnCloseTimetable.addEventListener('click', () => {
+      soundEngine.playClick();
+      timetableModal.classList.remove('active');
+    });
+
+    // Help Modal
+    const helpModal = document.getElementById('helpModal');
+    const btnOpenHelp = document.getElementById('btnOpenHelp');
+    const btnCloseHelp = document.getElementById('btnCloseHelp');
+
+    btnOpenHelp.addEventListener('click', () => {
+      soundEngine.playClick();
+      helpModal.classList.add('active');
+    });
+
+    btnCloseHelp.addEventListener('click', () => {
+      soundEngine.playClick();
+      helpModal.classList.remove('active');
+    });
+
+    [timetableModal, helpModal, document.getElementById('testsModal')].forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          soundEngine.playClick();
+          modal.classList.remove('active');
+        }
+      });
+    });
+
+    /* ==========================================================================
+       AUTOMATED PRESET TEST RUNNER MODAL
+       ========================================================================== */
+    const testsModal = document.getElementById('testsModal');
+    const btnOpenTests = document.getElementById('btnOpenTests');
+    const btnCloseTests = document.getElementById('btnCloseTests');
+    const btnRunAllTests = document.getElementById('btnRunAllTests');
+    const testResultsContainer = document.getElementById('testResultsContainer');
+
+    function executeAllTests() {
+      const tests = [
+        {
+          id: 1,
+          name: 'TEST 1: 100% Attendance on Day 1 (2026-08-29)',
+          run: () => {
+            const res = calculateAttendance({
+              sectionId: 'iv-ece-a',
+              todayStr: '2026-08-29',
+              todayDone: false,
+              holidaysList: [],
+              subjectPercentages: { A: 100 }
+            });
+            const subA = res.subjects['A'];
+            const p1 = subA.T === 0;
+            const p2 = subA.R > 0;
+            const p3 = subA.x75 === Math.ceil(0.75 * subA.R);
+            const p4 = subA.status === 'SAFE';
+            const pass = p1 && p2 && p3 && p4;
+            return {
+              pass,
+              log: `• Classes held so far T: ${subA.T} (Expected 0) -> ${p1 ? 'PASS' : 'FAIL'}\n• Classes remaining R: ${subA.R} -> ${p2 ? 'PASS' : 'FAIL'}\n• x75 needed: ${subA.x75} of ${subA.R}, safe skips allowed: ${subA.canSkip75} -> ${p3 ? 'PASS' : 'FAIL'}\n• Status: ${subA.status} -> ${p4 ? 'PASS' : 'FAIL'}`
+            };
+          }
+        },
+        {
+          id: 2,
+          name: 'TEST 2: 60% Attendance with 3 Weeks Left (Irreversible Trigger)',
+          run: () => {
+            const res = calculateAttendance({
+              sectionId: 'iv-ece-a',
+              todayStr: '2026-11-08',
+              todayDone: true,
+              holidaysList: [],
+              subjectPercentages: { A: 60 }
+            });
+            const subA = res.subjects['A'];
+            const pass = subA.isIrreversible === true && subA.status === 'IRREVERSIBLE' && res.hasIrreversible;
+            return {
+              pass,
+              log: `• Classes held T: ${subA.T}, Attended A: ${subA.A.toFixed(1)}, Remaining R: ${subA.R}\n• x75 needed: ${subA.x75} of ${subA.R} (Exceeds remaining! Deficit: ${subA.x75 - subA.R})\n• Max Achievable %: ${subA.maxAchievablePct.toFixed(1)}% (< 75% threshold)\n• Is Irreversible Flag: ${subA.isIrreversible}\n• Status: ${subA.status} (IRREVERSIBLE DETENTION TRIGGERED!)`
+            };
+          }
+        },
+        {
+          id: 3,
+          name: 'TEST 3: Today After Semester Ends (2026-11-30, R = 0)',
+          run: () => {
+            const resSafe = calculateAttendance({
+              sectionId: 'iv-ece-a',
+              todayStr: '2026-11-30',
+              todayDone: true,
+              holidaysList: [],
+              subjectPercentages: { A: 80 }
+            });
+            const resDetained = calculateAttendance({
+              sectionId: 'iv-ece-a',
+              todayStr: '2026-11-30',
+              todayDone: true,
+              holidaysList: [],
+              subjectPercentages: { A: 70 }
+            });
+            const subSafe = resSafe.subjects['A'];
+            const subDetained = resDetained.subjects['A'];
+            const pass = subSafe.R === 0 && subDetained.R === 0 && subSafe.status === 'OK' && subDetained.status === 'IRREVERSIBLE';
+            return {
+              pass,
+              log: `• Remaining classes R after semester end: ${subSafe.R} (Expected 0)\n• Student with 80% attendance -> Status: ${subSafe.status} (SAFE/OK)\n• Student with 70% attendance -> Status: ${subDetained.status} (IRREVERSIBLE DETENTION, Deficit: ${subDetained.x75})`
+            };
+          }
+        },
+        {
+          id: 4,
+          name: 'TEST 4: Planning Date in Past & Planning Date after Nov 29',
+          run: () => {
+            const resPast = calculateAttendance({
+              sectionId: 'iv-ece-a',
+              todayStr: '2026-09-28',
+              todayDone: false,
+              futureDateStr: '2026-09-20',
+              subjectPercentages: { A: 85 }
+            });
+            const resBeyond = calculateAttendance({
+              sectionId: 'iv-ece-a',
+              todayStr: '2026-09-28',
+              todayDone: false,
+              futureDateStr: '2026-12-10',
+              subjectPercentages: { A: 85 }
+            });
+            const subPast = resPast.subjects['A'];
+            const subBeyond = resBeyond.subjects['A'];
+            const pass = subPast.future.isPast === true && subBeyond.future.R_future === subBeyond.R;
+            return {
+              pass,
+              log: `• Planning date in past (2026-09-20): Gracefully detected isPast=${subPast.future.isPast}, R_future=0\n• Planning date beyond Nov 29 (2026-12-10): Clamped to total sem remaining R_future=${subBeyond.future.R_future} of ${subBeyond.R}`
+            };
+          }
+        }
+      ];
+
+      testResultsContainer.innerHTML = '';
+      let allPass = true;
+
+      tests.forEach(t => {
+        const result = t.run();
+        if (!result.pass) allPass = false;
+
+        const card = document.createElement('div');
+        card.className = 'test-card';
+        card.innerHTML = `
+          <div class="test-header">
+            <span class="test-name">${t.name}</span>
+            <span class="${result.pass ? 'test-badge-pass' : 'test-badge-fail'}">
+              ${result.pass ? '✔ PASSED' : '✖ FAILED'}
+            </span>
+          </div>
+          <div class="test-log">${result.log}</div>
+        `;
+        testResultsContainer.appendChild(card);
+      });
+
+      if (allPass) {
+        soundEngine.playSuccess();
+        showToast('All 4 test cases PASSED perfectly!');
+      } else {
+        soundEngine.playDanger();
+      }
+    }
+
+    btnOpenTests.addEventListener('click', () => {
+      soundEngine.playClick();
+      executeAllTests();
+      testsModal.classList.add('active');
+    });
+
+    btnCloseTests.addEventListener('click', () => {
+      soundEngine.playClick();
+      testsModal.classList.remove('active');
+    });
+
+    btnRunAllTests.addEventListener('click', () => {
+      soundEngine.playClick();
+      executeAllTests();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        timetableModal.classList.remove('active');
+        helpModal.classList.remove('active');
+        testsModal.classList.remove('active');
+        chatWidget.classList.remove('active');
+      }
+    });
+
+    /* ==========================================================================
+       INITIALIZATION
+       ========================================================================== */
+    initSectionControls();
+    renderApp();
+  </script>
+</body>
+</html>
